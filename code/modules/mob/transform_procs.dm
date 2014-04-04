@@ -461,6 +461,25 @@
 	. = new_mob
 	qdel(src)
 
+/mob/proc/apotheosis()
+
+	if(client)
+		src << sound(null, repeat = 0, wait = 0, volume = 85, channel = 1) // stop the jams for AIs
+	var/mob/camera/god/O = new (loc,,,1)
+	O.invisibility = 0
+
+	if(mind)
+		mind.transfer_to(O)
+	else
+		O.key = key
+
+	O.job = "Deity"
+
+	O.rename_self("deity")
+	. = O
+	qdel(src)
+	return
+
 /* Certain mob types have problems and should not be allowed to be controlled by players.
  *
  * This proc is here to force coders to manually place their mob in this list, hopefully tested.

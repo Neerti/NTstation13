@@ -233,6 +233,8 @@
 			if("constructbuilder")	M.change_mob_type( /mob/living/simple_animal/construct/builder , null, null, delmob )
 			if("constructwraith")	M.change_mob_type( /mob/living/simple_animal/construct/wraith , null, null, delmob )
 			if("shade")				M.change_mob_type( /mob/living/simple_animal/shade , null, null, delmob )
+//			if("god")				M.change_mob_type( /mob/camera/god , null ,null, delmob )
+			if("god")               M.apotheosis() //Snowflaky but otherwise carn yells at me.
 
 
 	/////////////////////////////////////new ban stuff

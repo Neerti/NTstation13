@@ -115,6 +115,11 @@ proc/isovermind(A)
 		return 1
 	return 0
 
+proc/isgod(A)
+	if(istype(A, /mob/camera/god))
+		return 1
+	return 0
+
 proc/isorgan(A)
 	if(istype(A, /obj/item/organ/limb))
 		return 1
