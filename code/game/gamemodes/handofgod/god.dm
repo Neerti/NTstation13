@@ -11,12 +11,25 @@
 	var/max_god_points = 100
 	var/followers = 0 //How many players are currently a part of the god's cult.  If this is zero, the god dies.
 
-	var/team = 0 //Which side the god is on. 1 and 2 is used for hand of god gamemode, 0 is for neutral gods for admins to play with.
+	var/side = "neutral" //Which side the god is on. red and blue is for gamemode, neutral is for admins to play with.
 
-	var/obj/structure/divine/nexus/anchor = null // The god's nexus.  Without it, they die.
+	var/obj/structure/divine/nexus/god_nexus = null // The god's nexus.  Without it, they die.
 
 	var/nexus_required = 0 //If they need the nexus to survive.  Defaults to zero so newly spawned gods don't instantly die.
 	var/followers_required = 0 //Same as above.
+
+/mob/camera/god/proc/get_god_points()
+ 	return god_points
+
+/mob/camera/god/Stat()
+	statpanel("Status")
+	..()
+	if (client.statpanel == "Status")
+		if(god_nexus)
+			stat(null, "Nexus Health: [god_nexus.health]")
+		stat(null, "Followers: [followers]")
+		stat(null, "Faith Points: [god_points]/[max_god_points]")
+	return
 
 /mob/camera/god/Login()
 	..()
