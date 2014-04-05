@@ -18,6 +18,20 @@
 	var/nexus_required = 0 //If they need the nexus to survive.  Defaults to zero so newly spawned gods don't instantly die.
 	var/followers_required = 0 //Same as above.
 
+/mob/camera/god/New(loc) //Makes default name be picked from a text file, for the uncreative god.
+	var/list/possibleNames = deity_names
+
+	var/pickedName = null
+	while(!pickedName)
+		pickedName = pick(deity_names)
+		for (var/mob/camera/god/A in mob_list)
+			if (A.real_name == pickedName && possibleNames.len > 1) //fixing the theoretically possible infinite loop
+				possibleNames -= pickedName
+				pickedName = null
+
+	real_name = pickedName
+	name = real_name
+
 /mob/camera/god/proc/get_god_points()
  	return god_points
 
