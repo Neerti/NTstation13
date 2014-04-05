@@ -9,7 +9,7 @@
 
 	var/god_points = 0 //Used to interact with your followers.
 	var/max_god_points = 100
-	var/followers = 0 //How many players are currently a part of the god's cult.  If this is zero, the god dies.
+	var/follower_count = 0 //How many players are currently a part of the god's cult.  If this is zero, the god dies.
 
 	var/side = "neutral" //Which side the god is on. red and blue is for gamemode, neutral is for admins to play with.
 
@@ -17,6 +17,8 @@
 
 	var/nexus_required = 0 //If they need the nexus to survive.  Defaults to zero so newly spawned gods don't instantly die.
 	var/followers_required = 0 //Same as above.
+	var/list/followers = list()
+	var/mob/living/carbon/human/yourprophet // Your prophet.
 
 /mob/camera/god/New(loc) //Makes default name be picked from a text file, for the uncreative god.
 	var/list/possibleNames = deity_names
@@ -67,7 +69,15 @@
 		hud_used.deity_power_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='cyan'>[src.god_points]  </font></div>"
 
 /mob/camera/god/Life() //add points per second
-		src.add_points(1)
+	src.add_points(1)
+	if(yourprophet)
+		if(yourprophet.stat == DEAD)
+			src << "You feel a great deal of pain as you feel your prophet leave this world."
+			yourprophet = null
+			src.verbs += /mob/camera/god/verb/newprophet
+			if(god_nexus)
+				src << "You feel your Nexus has become weaker from your prophet's death."
+				god_nexus.maxhealth -= 50
 
 
 /mob/camera/god/say(var/message)
@@ -98,8 +108,9 @@
 	var/rendered = "<font color=\"#045FB4\"><i><span class='game say'>Divine Telepathy, <span class='name'>[name]</span> <span class='message'>[message_a]</span></span></i></font>"
 
 	for (var/mob/M in mob_list)
-		if(isprophet(M) || isobserver(M))
+		if(isyourprophet(M,src) || isobserver(M))
 			M.show_message(rendered, 2)
+			src.show_message(rendered, 2)
 
 /mob/camera/god/emote(var/act,var/m_type=1,var/message = null)
 	return

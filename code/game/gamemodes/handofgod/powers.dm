@@ -23,26 +23,31 @@
 	if(!powerc(100))
 		src << "You don't have enough power to make a prophet yet."
 		return
-	var/list/cultists = list()
-	for(var/mob/living/carbon/human/M in mob_list)
-		var/mob/living/carbon/human/C = M
-		if(C.deity == src)
-			cultists.Add(C)
-	var/choice = input("Choose who you wish to make your prophet","Prophet Creation") as null|anything in cultists
+	var/choice = input("Choose who you wish to make your prophet","Prophet Creation") as null|anything in followers
 	if(choice)
 		var/mob/living/carbon/human/B = choice
 		src << "You choose [B] as your prophet."
 		B.deity = src
 		B.prophet = 1
 		B << "Rejoice, for ye have been chosen to be thy generous god, [src]'s prophet!"
+		yourprophet = B
 		src.verbs -= /mob/camera/god/verb/newprophet
 		god_points -= 100
 		return
 
-/mob/camera/god/verb/talk()
+/mob/camera/god/verb/talk(msg as text)
 	set category = "God Powers"
-	set name = "Talk to Anyone (75)"
+	set name = "Talk to Anyone (20)"
 	set desc = "Allows you to send a message to anyone."
+	if(!powerc(20))
+		src << "You don't have enough power for this."
+		return
+	var/choice = input("Choose who you wish to talk to","Talk to Anyone") as null|anything in mob_list
+	if(choice)
+		var/tempmsg = msg
+		msg = "\bold You hear a voice coming from everywhere and nowhere... \italic [tempmsg]"
+		choice << msg
+		god_points -= 20
 
 /mob/camera/god/verb/smite()
 	set category = "God Powers"
@@ -78,6 +83,8 @@
 		var/mob/living/carbon/human/B = choice
 		B.deity = src
 		src << "You convert [B]."
+		followers.Add(choice)
+		return
 
 /mob/camera/god/verb/disaster()
 	set category = "God Powers"

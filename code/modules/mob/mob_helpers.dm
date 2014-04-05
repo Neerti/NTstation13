@@ -120,10 +120,18 @@ proc/isgod(A)
 		return 1
 	return 0
 
-proc/isprophet(A, D)
+proc/isyourprophet(A, D)
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.prophet && H.deity == D)
+			return 1
+		else
+			return 0
+	return 0
+proc/isprophet(A)
+	if(istype(A, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = A
+		if(H.prophet)
 			return 1
 		else
 			return 0
