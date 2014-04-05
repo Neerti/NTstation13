@@ -123,6 +123,11 @@
 	desc = "A shrine dedicated to a deity."
 	icon_state = "shrine"
 
+/obj/structure/divine/shrine/New()
+	..()
+	var/tempname = name
+	name = "[tempname][deity.name]"
+
 /obj/structure/divine/holder //used for building the structures.
 	name = "I'm an error." //Name is replaced by the object being built.
 	desc = "My description is broken, report me to a coder." //ditto, also tells what is needed to finish.

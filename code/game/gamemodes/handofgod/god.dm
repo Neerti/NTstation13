@@ -84,7 +84,7 @@
 	var/rendered = "<font color=\"#045FB4\"><i><span class='game say'>Divine Telepathy, <span class='name'>[name]</span> <span class='message'>[message_a]</span></span></i></font>"
 
 	for (var/mob/M in mob_list)
-		if(isgod(M) || isobserver(M))
+		if(isprophet(M) || isobserver(M))
 			M.show_message(rendered, 2)
 
 /mob/camera/god/emote(var/act,var/m_type=1,var/message = null)

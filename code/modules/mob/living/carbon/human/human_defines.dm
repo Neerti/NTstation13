@@ -45,3 +45,6 @@
 	var/xylophone = 0 //For the spoooooooky xylophone cooldown
 
 	var/gender_ambiguous = 0 //if something goes wrong during gender reassignment this generates a line in examine
+
+	var/mob/camera/god/deity // For the Hand of God Gamemode. Tells who your deity is.
+	var/prophet = 0 // Tells if you're a prophet.
