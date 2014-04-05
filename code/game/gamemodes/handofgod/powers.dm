@@ -14,10 +14,30 @@
 
 	if(god_nexus)
 		src.loc = god_nexus.loc
+	else
+		src << "You don't have a Nexus yet. Build one first."
 
 /mob/camera/god/verb/newprophet()
 	set category = "God Powers"
 	set name = "Appoint Prophet (100)"
+	if(!powerc(100))
+		src << "You don't have enough power to make a prophet yet."
+		return
+	var/list/cultists = list()
+	for(var/mob/living/carbon/human/M in mob_list)
+		var/mob/living/carbon/human/C = M
+		if(C.deity == src)
+			cultists.Add(C)
+	var/choice = input("Choose who you wish to make your prophet","Prophet Creation") as null|anything in cultists
+	if(choice)
+		var/mob/living/carbon/human/B = choice
+		src << "You choose [B] as your prophet."
+		B.deity = src
+		B.prophet = 1
+		B << "Rejoice, for ye have been chosen to be thy generous god, [src]'s prophet!"
+		src.verbs -= /mob/camera/god/verb/newprophet
+		god_points -= 100
+		return
 
 /mob/camera/god/verb/talk()
 	set category = "God Powers"
@@ -45,6 +65,19 @@
 /mob/camera/god/verb/cure()
 	set category = "God Powers"
 	set name = "Cure Disease (10)"
+
+/mob/camera/god/verb/testconvert()
+	set category = "God Powers"
+	set name = "Testing Convert Mob"
+	var/list/humans = list()
+	for(var/mob/living/carbon/human/M in mob_list)
+		var/mob/living/carbon/human/C = M
+		humans.Add(C)
+	var/choice = input("Choose who you wish to make your follower.","Follower Creation") as null|anything in humans
+	if(choice)
+		var/mob/living/carbon/human/B = choice
+		B.deity = src
+		src << "You convert [B]."
 
 /mob/camera/god/verb/disaster()
 	set category = "God Powers"
@@ -106,4 +139,19 @@
 				new /obj/structure/divine/defensepylon(loc)
 			if("shrine")
 				new /obj/structure/divine/shrine(loc)
+	return
+
+/mob/camera/god/verb/god_chat(msg as text)
+	set category = "God Powers"
+	set name = "Talk to Gods"
+	set desc = "Talk with the other Gods tethered to this station."
+	msg = copytext(sanitize(msg), 1, MAX_MESSAGE_LEN)
+	if(!msg)	return
+
+	log_admin("[key_name(src)] : [msg]")
+	var/tempmsg = msg
+	msg = "<font color=\"#045FB4\"><i><span class='game say'>Divinity Chat, <span class='name'>[name]</span> <span class='message'>[tempmsg]</span></span></i></font>"
+	for(var/mob/M in mob_list)
+		if(isgod(M) || isobserver(M))
+			M.show_message(msg, 2)
 	return
