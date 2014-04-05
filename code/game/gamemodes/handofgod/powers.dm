@@ -48,8 +48,13 @@
 
 /mob/camera/god/verb/disaster()
 	set category = "God Powers"
-	set name = "Invoke Disaster (100)"
+	set name = "Invoke Disaster (300)"
 	set desc = "Invokes the wrath of O'telbra Volema, god of chaos, causing random disastrous events."
+
+/mob/camera/god/verb/heavyion()
+	set category = "God Powers"
+	set name = "Heavy Ion(300)"
+	set desc = "Causes everything you can see to be ionized."
 
 /mob/camera/god/verb/buildnexus()
 	set category = "God Powers"
@@ -63,6 +68,7 @@
 		src.god_nexus = O
 		src.nexus_required = 1
 		src.verbs -= /mob/camera/god/verb/buildnexus
+		src.update_health()
 		return
 
 
@@ -77,7 +83,7 @@
 																											"power pylon","defense pylon","shrine")
 		if(!choice || !powerc(75))	return
 		src << "You create an unfinished [choice]."
-//		src.god_points-75
+		src.add_points(-75)
 		for(var/mob/O in viewers(src, null))
 			O.show_message(text("<font color='blue'><b>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</B></font>"), 1) //todo:span classes
 		switch(choice)
@@ -94,7 +100,8 @@
 			if("gate")
 				new /obj/structure/divine/gate(loc)
 			if("power pylon")
-				new /obj/structure/divine/powerpylon(loc)
+				var/obj/structure/divine/powerpylon/O = new(loc)
+				O.deity = usr
 			if("defense pylon")
 				new /obj/structure/divine/defensepylon(loc)
 			if("shrine")

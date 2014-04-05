@@ -43,9 +43,18 @@
 	src << "The first thing you should do after placing your nexus is to <b>appoint a prophet</b>.  Only prophets can hear you talk, unless you use an expensive power."
 	update_health()
 
-/mob/camera/god/proc/update_health() //handles hud stuff
+/mob/camera/god/proc/update_health() //health hud stuff
 	if(god_nexus)
-		hud_used.deity_health_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='green'>[god_nexus.health]</font></div>"
+		hud_used.deity_health_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='lime'>[god_nexus.health]   </font></div>"
+
+/mob/camera/god/proc/add_points(var/points) //point regen and point hud stuff, taken from blob
+	if(points != 0)
+		god_points = Clamp(god_points + points, 0, max_god_points)
+		hud_used.deity_power_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='cyan'>[src.god_points]  </font></div>"
+
+/mob/camera/god/Life() //add points per second
+		src.add_points(1)
+
 
 /mob/camera/god/say(var/message)
 	if (!message)

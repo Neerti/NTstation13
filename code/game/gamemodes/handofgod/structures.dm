@@ -7,6 +7,7 @@
 	var/maxhealth = 100
 	var/side = "neutral" //Which side owns the structure.
 	var/heal_rate = 1 //How much health it heals per tick.  Set to zero to disable healing.
+	var/mob/camera/god/deity = null
 
 ////////////////////////
 //Procs for structures//
@@ -51,7 +52,6 @@
 	icon_state = "nexus"
 	health = 500
 	maxhealth = 500
-	var/mob/camera/god/deity = null //The deity linked to this.
 
 	/obj/structure/divine/nexus/ex_act() //Prevent cheesing the round by a shitty scientist
 		return
