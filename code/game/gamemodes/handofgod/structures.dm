@@ -55,6 +55,16 @@
 
 	/obj/structure/divine/nexus/ex_act() //Prevent cheesing the round by a shitty scientist
 		return
+	/obj/structure/divine/nexus/checkhealth() //let me know if this can be done better.
+		if(deity)
+			deity.update_health() //updates the hud
+		if(health <= 0)
+			if(deity.nexus_required)
+				deity << "<span class='danger'>Your nexus was destroyed.  You feel yourself fading...</font>"
+				qdel(deity) //Our nexus died, and so does the god.
+			visible_message("<span class='danger'>The [src.name] was destroyed!</font>")
+			qdel(src)
+		return
 
 /obj/structure/divine/conduit
 	name = "Conduit"
@@ -112,3 +122,11 @@
 	name = "Shrine to " //todo: add name of god here.
 	desc = "A shrine dedicated to a deity."
 	icon_state = "shrine"
+
+/obj/structure/divine/holder //used for building the structures.
+	name = "I'm an error." //Name is replaced by the object being built.
+	desc = "My description is broken, report me to a coder." //ditto, also tells what is needed to finish.
+	icon_state = null //ditto
+	health = 20
+	maxhealth = 20
+	var/project = null //What is being built.  Determines what to spawn after construction is finished.

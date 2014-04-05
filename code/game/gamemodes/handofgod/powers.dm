@@ -49,16 +49,22 @@
 /mob/camera/god/verb/disaster()
 	set category = "God Powers"
 	set name = "Invoke Disaster (100)"
-	set desc = "Causes fate to intervene with the station, which may spell doom.  Useful if you wish to encourage leaving."
+	set desc = "Invokes the wrath of O'telbra Volema, god of chaos, causing random disastrous events."
 
 /mob/camera/god/verb/buildnexus()
 	set category = "God Powers"
 	set name = "Create Nexus"
 	set desc = "Instantly creates your nexus.  You can only do this once, so pick a good spot."
+	if(!isturf(src.loc) || istype(src.loc, /turf/space)) //I tried using the powerc() proc but it just wouldn't work.
+		src << "<span class='danger'>Your structure would just float away, it needs to be on stable ground.</font>"
+	else
+		var/obj/structure/divine/nexus/O = new(loc)
+		O.deity = usr
+		src.god_nexus = O
+		src.nexus_required = 1
+		src.verbs -= /mob/camera/god/verb/buildnexus
+		return
 
-///mob/camera/god/verb/build()
-//		set category = "God Powers"
-//		set name = "Create Structure"
 
 /mob/camera/god/verb/build()
 	set category = "God Powers"
@@ -70,8 +76,8 @@
 																											"sacrifice alter","holy puddle","gate",
 																											"power pylon","defense pylon","shrine")
 		if(!choice || !powerc(75))	return
-		powerc(-75)
 		src << "You create an unfinished [choice]."
+//		src.god_points-75
 		for(var/mob/O in viewers(src, null))
 			O.show_message(text("<font color='blue'><b>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</B></font>"), 1) //todo:span classes
 		switch(choice)

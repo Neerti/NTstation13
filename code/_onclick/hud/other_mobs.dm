@@ -33,3 +33,27 @@
 	mymob.client.screen = null
 
 	mymob.client.screen += list(blobpwrdisplay, blobhealthdisplay)
+
+/datum/hud/proc/god_hud()
+
+	deity_power_display = new /obj/screen()
+	deity_power_display.name = "faith points"
+	deity_power_display.icon_state = "deity_power"
+	deity_power_display.screen_loc = ui_internal
+	deity_power_display.layer = 20
+
+	deity_health_display = new /obj/screen()
+	deity_health_display.name = "nexus health"
+	deity_health_display.icon_state = "deity_nexus"
+	deity_health_display.screen_loc = ui_health
+	deity_health_display.layer = 20
+
+	deity_follower_display = new /obj/screen()
+	deity_follower_display.name = "followers"
+	deity_follower_display.icon_state = "deity_followers"
+	deity_follower_display.screen_loc = ui_nutrition
+	deity_follower_display.layer = 20
+
+	mymob.client.screen = null
+
+	mymob.client.screen += list(deity_power_display, deity_health_display, deity_follower_display)

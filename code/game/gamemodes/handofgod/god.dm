@@ -41,6 +41,11 @@
 	src << "Your <b>Nexus Integrity</b> tells you the condition of your nexus.  If your nexus is destroyed, you die as well, but your powers are amplified when near it."
 	src << "Your <b>Power</b> is used to interact with the world.  This will regenerate on it's own, and it goes faster when you have more followers."
 	src << "The first thing you should do after placing your nexus is to <b>appoint a prophet</b>.  Only prophets can hear you talk, unless you use an expensive power."
+	update_health()
+
+/mob/camera/god/proc/update_health() //handles hud stuff
+	if(god_nexus)
+		hud_used.deity_health_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='green'>[god_nexus.health]</font></div>"
 
 /mob/camera/god/say(var/message)
 	if (!message)
