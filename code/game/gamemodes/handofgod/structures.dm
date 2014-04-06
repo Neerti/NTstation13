@@ -20,7 +20,7 @@
 /obj/structure/divine/proc/checkhealth() //Checks if we should be dead.
 	if(health <= 0)
 		visible_message("<span class='danger'>The [src.name] was destroyed!</font>")
-		qdel(src)
+		predelete()
 		return
 
 
@@ -43,6 +43,14 @@
 	checkhealth()
 	return
 
+/obj/structure/divine/proc/postbuild() // Handles anything we need done post building.
+	if(side == "red")
+		icon_state += "-r"
+	if(side == "blue")
+		icon_state += "-b"
+
+/obj/structure/divine/proc/predelete()
+	qdel(src)
 //////////////
 //Structures//
 //////////////
@@ -52,20 +60,35 @@
 	icon_state = "nexus"
 	health = 500
 	maxhealth = 500
+	var/point_regen_rate = 1
+	var/list/powerpylons = list()
 
-	/obj/structure/divine/nexus/ex_act() //Prevent cheesing the round by a shitty scientist
-		return
-	/obj/structure/divine/nexus/checkhealth() //let me know if this can be done better.
-		if(deity)
-			deity.update_health() //updates the hud
-		if(health <= 0)
-			if(deity.nexus_required)
-				deity << "<span class='danger'>Your nexus was destroyed.  You feel yourself fading...</font>"
-				qdel(deity) //Our nexus died, and so does the god.
-			visible_message("<span class='danger'>The [src.name] was destroyed!</font>")
-			qdel(src)
-		return
+/obj/structure/divine/nexus/ex_act() //Prevent cheesing the round by a shitty scientist
+	return
+/obj/structure/divine/nexus/checkhealth() //let me know if this can be done better.
+	if(deity)
+		deity.update_health() //updates the hud
+	if(health <= 0)
+		if(deity.nexus_required)
+			deity << "<span class='danger'>Your nexus was destroyed.  You feel yourself fading...</font>"
+			qdel(deity) //Our nexus died, and so does the god.
+		visible_message("<span class='danger'>The [src.name] was destroyed!</font>")
+		qdel(src)
+	return
 
+/obj/structure/divine/nexus/New()
+	processing_objects.Add(src)
+
+/obj/structure/divine/nexus/process()
+	deity.add_points(point_regen_rate + powerpylons.len)
+	if(deity.yourprophet)
+		if(deity.yourprophet.stat == 2)
+			deity << "You feel a great deal of pain as you feel your prophet leave this world."
+			deity.yourprophet = null
+			deity.verbs += /mob/camera/god/verb/newprophet
+			deity << "You feel your Nexus has become weaker from your prophet's death."
+			maxhealth -= 50
+	checkhealth()
 /obj/structure/divine/conduit
 	name = "Conduit"
 	desc = "It allows a deity to extend their reach.  Their powers are just as potent near a conduit as a nexus."
@@ -111,6 +134,13 @@
 	health = 30
 	maxhealth = 30
 
+/obj/structure/divine/powerpylon/postbuild()
+	..()
+	deity.god_nexus.powerpylons.Add(src)
+
+/obj/structure/divine/powerpylon/predelete()
+	deity.god_nexus.powerpylons.Remove(src)
+	..()
 /obj/structure/divine/defensepylon
 	name = "Defense Pylon"
 	desc = "A plyon which is blessed to withstand many blows, and fire strong bolts at nonbelivers."
@@ -123,10 +153,15 @@
 	desc = "A shrine dedicated to a deity."
 	icon_state = "shrine"
 
-/obj/structure/divine/shrine/New()
+/obj/structure/divine/shrine/postbuild()
 	..()
 	var/tempname = name
 	name = "[tempname][deity.name]"
+	deity.max_god_points += 50
+
+/obj/structure/divine/shrine/predelete()
+	deity.max_god_points -= 50
+	..()
 
 /obj/structure/divine/holder //used for building the structures.
 	name = "I'm an error." //Name is replaced by the object being built.

@@ -32,7 +32,7 @@
 		B << "Rejoice, for ye have been chosen to be thy generous god, [src]'s prophet!"
 		yourprophet = B
 		src.verbs -= /mob/camera/god/verb/newprophet
-		god_points -= 100
+		src.add_points(-100)
 		return
 
 /mob/camera/god/verb/talk(msg as text)
@@ -47,12 +47,24 @@
 		var/tempmsg = msg
 		msg = "\bold You hear a voice coming from everywhere and nowhere... \italic [tempmsg]"
 		choice << msg
-		god_points -= 20
+		src << "You say the following to [choice], [tempmsg]"
+		src.add_points(-20)
 
 /mob/camera/god/verb/smite()
 	set category = "God Powers"
 	set name = "Smite (40)"
 	set desc = "Hits anything under you with a large amount of damage."
+	if(!powerc(40))
+		src << "You don't have enough power to do that."
+		return
+	for(var/mob/living/carbon/human/M in src.loc)
+		var/mob/living/carbon/human/H = M
+		src << "You smite [H] with your godly powers!"
+		H.adjustFireLoss(10)
+		H.adjustBruteLoss(10)
+		H.Weaken(5)
+		H << "You feel a sense of horrifying agony as you are smited by an unseen force!"
+	src.add_points(-40)
 
 /mob/camera/god/verb/summonguardians()
 	set category = "God Powers"
@@ -104,7 +116,8 @@
 		src << "<span class='danger'>Your structure would just float away, it needs to be on stable ground.</font>"
 	else
 		var/obj/structure/divine/nexus/O = new(loc)
-		O.deity = usr
+		O.deity = src
+		O.side = src.side
 		src.god_nexus = O
 		src.nexus_required = 1
 		src.verbs -= /mob/camera/god/verb/buildnexus
@@ -128,24 +141,50 @@
 			O.show_message(text("<font color='blue'><b>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</B></font>"), 1) //todo:span classes
 		switch(choice)
 			if("conduit")
-				new /obj/structure/divine/conduit(loc)
+				var/obj/structure/divine/conduit/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("forge")
-				new /obj/structure/divine/forge(loc)
+				var/obj/structure/divine/forge/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("convert alter")
-				new /obj/structure/divine/convertalter(loc)
+				var/obj/structure/divine/convertalter/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("sacrifice alter")
-				new /obj/structure/divine/sacrificealter(loc)
+				var/obj/structure/divine/sacrificealter/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("holy puddle")
-				new /obj/structure/divine/puddle(loc)
+				var/obj/structure/divine/puddle/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("gate")
-				new /obj/structure/divine/gate(loc)
+				var/obj/structure/divine/gate/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("power pylon")
 				var/obj/structure/divine/powerpylon/O = new(loc)
-				O.deity = usr
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("defense pylon")
-				new /obj/structure/divine/defensepylon(loc)
+				var/obj/structure/divine/defensepylon/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("shrine")
-				new /obj/structure/divine/shrine(loc)
+				var/obj/structure/divine/shrine/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 	return
 
 /mob/camera/god/verb/god_chat(msg as text)
@@ -161,4 +200,5 @@
 	for(var/mob/M in mob_list)
 		if(isgod(M) || isobserver(M))
 			M.show_message(msg, 2)
+			src << msg
 	return

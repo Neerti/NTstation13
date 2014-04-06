@@ -3,7 +3,8 @@
 	real_name = "deity"
 	icon = 'icons/mob/god.dmi'
 	icon_state = "marker" //Placeholder
-	invisibility = 60
+	see_invisible = SEE_INVISIBLE_MINIMUM
+	invisibility = INVISIBILITY_OBSERVER
 	see_in_dark = 8
 	sight = SEE_TURFS | SEE_MOBS | SEE_OBJS | SEE_SELF
 
@@ -22,7 +23,6 @@
 
 /mob/camera/god/New(loc) //Makes default name be picked from a text file, for the uncreative god.
 	var/list/possibleNames = deity_names
-
 	var/pickedName = null
 	while(!pickedName)
 		pickedName = pick(deity_names)
@@ -68,16 +68,6 @@
 		god_points = Clamp(god_points + points, 0, max_god_points)
 		hud_used.deity_power_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='cyan'>[src.god_points]  </font></div>"
 
-/mob/camera/god/Life() //add points per second
-	src.add_points(1)
-	if(yourprophet)
-		if(yourprophet.stat == DEAD)
-			src << "You feel a great deal of pain as you feel your prophet leave this world."
-			yourprophet = null
-			src.verbs += /mob/camera/god/verb/newprophet
-			if(god_nexus)
-				src << "You feel your Nexus has become weaker from your prophet's death."
-				god_nexus.maxhealth -= 50
 
 
 /mob/camera/god/say(var/message)
@@ -110,7 +100,7 @@
 	for (var/mob/M in mob_list)
 		if(isyourprophet(M,src) || isobserver(M))
 			M.show_message(rendered, 2)
-			src.show_message(rendered, 2)
+			src << rendered
 
 /mob/camera/god/emote(var/act,var/m_type=1,var/message = null)
 	return
