@@ -23,7 +23,6 @@
 
 /mob/camera/god/New(loc) //Makes default name be picked from a text file, for the uncreative god.
 	var/list/possibleNames = deity_names
-	processing_objects.Add(src)
 	var/pickedName = null
 	while(!pickedName)
 		pickedName = pick(deity_names)
@@ -68,8 +67,6 @@
 	if(points != 0)
 		god_points = Clamp(god_points + points, 0, max_god_points)
 		hud_used.deity_power_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='cyan'>[src.god_points]  </font></div>"
-
-/mob/camera/god/Life() //add points per second
 
 
 
