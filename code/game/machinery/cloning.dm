@@ -185,6 +185,10 @@
 			if (H.mind in ticker.mode.cult)
 				ticker.mode.add_cultist(src.occupant.mind)
 				ticker.mode.update_all_cult_icons() //So the icon actually appears
+//		if("handofgod") //todo: complete this after the mind datum stuff is done, also make sure to seperate each team.
+//			if (H.mind in ticker.mode.handofgod)
+//				ticker.mode.
+
 
 	// -- End mode specific stuff
 

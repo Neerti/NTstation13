@@ -120,6 +120,7 @@ datum/mind
 			"traitor", // "traitorchan",
 			"monkey",
 			"malfunction",
+			"handofgod"
 		)
 		var/text = ""
 
@@ -237,6 +238,19 @@ datum/mind
 		else
 			text += "<a href='?src=\ref[src];traitor=traitor'>traitor</a>|<b>LOYAL</b>"
 		sections["traitor"] = text
+
+		/** HAND OF GOD ***/
+		text = "hand of god"
+		if (ticker.mode.config_tag=="handofgod")
+			text = uppertext(text)
+		text = "<i><b>[text]</b></i>: "
+		if (src in ticker.mode.red_prophets)
+			text += "<b>RED PROPHET</b>|red follower|employee|blue follower|blue prophet"
+		if (src in ticker.mode.red_followers)
+			text += "red prophet|<b>RED FOLLOWER</b>|<a href='?src=\ref[src];follower=clear'>loyal</a>|blue follower|blue prophet"
+		else
+			text += "red prophet|<a href='?src=\ref[src];follower=follower'>red follower</a>|<b>EMPLOYEE</b>|blue follower|blue prophet"
+		sections["follower"] = text
 
 		/** MONKEY ***/
 		if (istype(current, /mob/living/carbon))
@@ -1087,6 +1101,11 @@ datum/mind
 	//	fail |= !ticker.mode.equip_traitor(current, 1)
 		fail |= !ticker.mode.equip_revolutionary(current)
 
+//	proc/make_Red_follower()
+//		if (ticker.mode.red_followers.len>0)
+//		ticker.mode.red_followers += src
+//		ticker.mode.update_red_follower_icons_added(src)
+//		special_role = "Red Follower"
 
 /mob/proc/sync_mind()
 	mind_initialize()	//updates the mind (or creates and initializes one if one doesn't exist)
