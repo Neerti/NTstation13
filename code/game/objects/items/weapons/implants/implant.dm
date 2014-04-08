@@ -147,6 +147,8 @@
 		return 0
 	else if(H.mind in ticker.mode:revolutionaries)
 		ticker.mode:remove_revolutionary(H.mind)
+	else if(H.mind in ticker.mode:red_followers || ticker.mode:blue_followers) //colon cancer why???
+		ticker.mode:remove_follower(H.mind)
 	H << "<span class='notice'>You feel a surge of loyalty towards Nanotrasen.</span>"
 	return 1
 

@@ -73,11 +73,17 @@
 //++Convert procs++//
 /////////////////////
 
-/datum/game_mode/proc/add_red_follower(var/datum/mind/red_follower_mind) //adds a follower
+//red
+
+/datum/game_mode/proc/add_red_follower(var/datum/mind/red_follower_mind)
 	var/mob/living/carbon/human/H = red_follower_mind.current//Check to see if the potential follower is implanted
 	if(isloyal(H))
 		return 0
 	if((red_follower_mind in red_followers) || (red_follower_mind in red_prophets) || (red_follower_mind in blue_followers) || (red_follower_mind in blue_prophets)) //sanity
+		return 0
+	var/obj/item/weapon/nullrod/N = locate() in H
+	if(N)
+		H << "Your nullrod prevented the deity from brainwashing you."
 		return 0
 	red_followers += red_follower_mind
 	red_follower_mind.current << "<span class='danger'>You are now a follower of ! You will now serve your cult to the death. You can identify your allies by the red four sided star icons, and your prophet by the eight-sided red and gold icon. Help them enforce your god's will on the station!</span>"
@@ -85,6 +91,30 @@
 	red_follower_mind.special_role = "Red Follower"
 	update_red_follower_icons_added(red_follower_mind)
 	return 1
+
+
+
+
+//blue
+
+
+///////////////////////
+//++Deconvert procs++//
+///////////////////////
+
+/datum/game_mode/proc/remove_follower(var/datum/mind/follower_mind) //this deconverts both sides
+	if(follower_mind in red_followers || blue_followers)
+		red_followers -= follower_mind
+		blue_followers -= follower_mind
+		follower_mind.special_role = null
+		follower_mind.current.attack_log += "\[[time_stamp()]\] <font color='red'>Has been deconverted from a deity's cult!</font>"
+
+		follower_mind.current << "<span class='danger'><b>Your mind has been cleared from the brainwashing the followers have done to you.  Now you serve yourself and the crew.</b></span>"
+
+		update_red_follower_icons_removed(follower_mind)
+//		update_blue_follower_icons_removed(follower_mind) //todo: make this proc
+		for(var/mob/living/M in view(follower_mind.current))
+			M << "[follower_mind.current] looks like they just remembered their real allegiance!"
 
 ///////////////////////////
 //++Follower icon procs++//

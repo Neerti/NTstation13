@@ -259,18 +259,24 @@ datum
 			description = "Water blessed by some deity."
 			color = "#E0E8EF" // rgb: 224, 232, 239
 
-			on_mob_life(var/mob/living/M as mob)
+			on_mob_life(var/mob/living/M as mob) //taken and adapted from malk cult code
 				if(!data) data = 1
 				data++
 				M.jitteriness = max(M.jitteriness-5,0)
-				if(data >= 30)
+				if(data >= 30)		// 12 units, 54 seconds @ metabolism 0.4 units & tick rate 1.8 sec
 					if (!M.stuttering) M.stuttering = 1
 					M.stuttering += 4
 					M.Dizzy(5)
-				if(data >= 30*2.5 && prob(33))
+				if(data >= 75 && prob(33))	// 30 units, 135 seconds
 					if (!M.confused) M.confused = 1
 					M.confused += 3
-				..()
+					if(isfollower(M))
+						ticker.mode.remove_follower(M.mind)
+						holder.remove_reagent(src.id, src.volume)	// maybe this is a little too perfect and a max() cap on the statuses would be better??
+						M.jitteriness = 0
+						M.stuttering = 0
+						M.confused = 0
+				holder.remove_reagent(src.id, 0.4)	//fixed consumption to prevent balancing going out of whack
 				return
 
 			reaction_turf(var/turf/simulated/T, var/volume)
