@@ -245,11 +245,11 @@ datum/mind
 			text = uppertext(text)
 		text = "<i><b>[text]</b></i>: "
 		if (src in ticker.mode.red_prophets)
-			text += "<b>RED PROPHET</b>|red follower|employee|blue follower|blue prophet"
+			text += "<b>RED PROPHET</b>|<a href='?src=\ref[src];handofgod=red follower'>red follower</a>|<a href='?src=\ref[src];handofgod=clear'>employee</a>|blue follower|blue prophet"
 		if (src in ticker.mode.red_followers)
-			text += "red prophet|<b>RED FOLLOWER</b>|<a href='?src=\ref[src];follower=clear'>loyal</a>|blue follower|blue prophet"
+			text += "<a href='?src=\ref[src];handofgod=red prophet'>red prophet</a>|<b>RED FOLLOWER</b>|<a href='?src=\ref[src];handofgod=clear'>employee</a>|blue follower|blue prophet"
 		else
-			text += "red prophet|<a href='?src=\ref[src];follower=follower'>red follower</a>|<b>EMPLOYEE</b>|blue follower|blue prophet"
+			text += "<a href='?src=\ref[src];handofgod=red prophet'>red prophet</a>|<a href='?src=\ref[src];handofgod=red follower'>red follower</a>|<b>EMPLOYEE</b>|blue follower|blue prophet"
 		sections["follower"] = text
 
 		/** MONKEY ***/
@@ -503,6 +503,61 @@ datum/mind
 			if(!istype(objective))	return
 			objective.completed = !objective.completed
 			log_admin("[key_name(usr)] toggled the win state for [current]'s objective: [objective.explanation_text]")
+
+		else if (href_list["handofgod"]) //todo: finish this proc
+			switch(href_list["handofgod"])
+				if("clear")
+					if(src in ticker.mode.red_followers)
+						ticker.mode.red_followers -= src
+						current << "<span class='danger'><b>You have been brainwashed... again!  You are no longer a follower!</b></span>"
+						ticker.mode.update_red_follower_icons_removed(src) //todo: make this proc
+						special_role = null
+					if(src in ticker.mode.red_prophets)
+						ticker.mode.red_prophets -= src
+						current << "span class='danger'><b>You have been brainwashed... again!  You are no longer a prophet!</b></span>"
+						ticker.mode.update_red_follower_icons_removed(src) //ditto
+						special_role = null
+					if(src in ticker.mode.blue_followers)
+						ticker.mode.blue_followers -= src
+						current << "<span class='danger'><b>You have been brainwashed... again!  You are no longer a follower!</b></span>"
+//						ticker.mode.update_blue_follower_icons_removed(src) //ditto
+						special_role = null
+					if(src in ticker.mode.blue_prophets)
+						ticker.mode.blue_prophets -= src
+						current << "<span class='danger'><b>You have been brainwashed... again!  You are no longer a prophet!</b></span>"
+//						ticker.mode.update_blue_follower_icons_removed(src) //ditto
+						special_role = null
+					message_admins("[key_name_admin(usr)] has de-follower'ed [current].")
+					log_admin("[key_name(usr)] has de-follower'ed [current].")
+
+				if("red follower")
+					if(src in ticker.mode.red_prophets)
+						ticker.mode.red_prophets -= src
+						ticker.mode.update_red_follower_icons_removed(src)
+						current << "<span class='danger'><b>A greater deity has severed your spirital link to your god.  You are no longer a prophet.</b></span>"
+					else if(!(src in ticker.mode.red_followers))
+						current << "<span class='danger'><b>You are now a follower! You will now serve your cult to the death. You can identify your allies by the red four sided star icons, and your prophet by the eight-sided red and gold icon. Help them enforce your god's will on the station!</b></span>"
+					else
+						return
+					ticker.mode.red_followers += src
+					ticker.mode.update_red_follower_icons_added(src)
+					special_role = "Red Follower"
+					message_admins("[key_name_admin(usr)] has red follower'ed [current].")
+					log_admin("[key_name(usr)] has red follower'ed [current].")
+				if("red prophet")
+					if(src in ticker.mode.red_followers)
+						ticker.mode.red_followers -= src
+						ticker.mode.update_red_follower_icons_removed(src)
+						current << "<span class='danger'><b>A greater deity has linked your spirit to your deity.  You are now a prophet.</b></span>"
+					else if(!(src in ticker.mode.red_prophets))
+						current << "<span class='danger'><b>You are now a follower and a prophet!</b></span>"
+					else
+						return
+					ticker.mode.red_prophets += src
+					ticker.mode.update_all_red_follower_icons(src)
+					special_role = "Red Prophet"
+					message_admins("[key_name_admin(usr)] has red prophet'ed [current].")
+					log_admin("[key_name(usr)] has red prophet'ed [current].")
 
 		else if (href_list["revolution"])
 			switch(href_list["revolution"])
@@ -1101,11 +1156,13 @@ datum/mind
 	//	fail |= !ticker.mode.equip_traitor(current, 1)
 		fail |= !ticker.mode.equip_revolutionary(current)
 
-//	proc/make_Red_follower()
-//		if (ticker.mode.red_followers.len>0)
-//		ticker.mode.red_followers += src
-//		ticker.mode.update_red_follower_icons_added(src)
-//		special_role = "Red Follower"
+	proc/make_Red_follower()
+//		if (ticker.mode.red_followers.len>0) //is this even needed?
+		ticker.mode.red_followers += src
+		ticker.mode.update_red_follower_icons_added(src)
+		special_role = "Red Follower"
+
+		ticker.mode.greet_red_follower(src,0)
 
 /mob/proc/sync_mind()
 	mind_initialize()	//updates the mind (or creates and initializes one if one doesn't exist)

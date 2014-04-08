@@ -416,3 +416,38 @@ datum/objective/absorb/check_completion()
 		return 1
 	else
 		return 0
+
+//hand of god objectives below
+
+//these need to be finished later.
+datum/objective/build
+	dangerrating = 15
+
+datum/objective/build/proc/gen_amount_goal(var/lowbound = 8, var/highbound = 16)
+	target_amount = rand (lowbound,highbound)
+	explanation_text = "Build [target_amount] shrines."
+	return target_amount
+
+datum/objective/build/check_completion()
+	if(!isgod(owner.current))
+		return 0
+
+datum/objective/deicide //might just reuse assassinate objective
+	explanation_text = "Phase, the false god out of existance."
+	dangerrating = 20
+
+datum/objective/follower_block
+	explanation_text = "Only allow your followers and prophet to escape on the station's shuttle alive."
+	dangerrating = 25
+
+datum/objective/get_followers
+	dangerrating = 5
+
+datum/objective/get_followers/proc/gen_amount_goal(var/lowbound = 10, var/highbound = 20)
+	target_amount = rand (lowbound,highbound)
+	explanation_text = "Your will must surpass this station.  Having [target_amount] followers escape on the shuttle will allow that."
+	return target_amount
+
+datum/objective/sacrifice_prophet
+	explanation_text = "A false prophet is preaching their god's faith on the station.  Sacrificing them will show the mortals who the true god is."
+	dangerrating = 10
