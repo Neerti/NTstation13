@@ -245,11 +245,15 @@ datum/mind
 			text = uppertext(text)
 		text = "<i><b>[text]</b></i>: "
 		if (src in ticker.mode.red_prophets)
-			text += "<b>RED PROPHET</b>|<a href='?src=\ref[src];handofgod=red follower'>red follower</a>|<a href='?src=\ref[src];handofgod=clear'>employee</a>|blue follower|blue prophet"
-		if (src in ticker.mode.red_followers)
-			text += "<a href='?src=\ref[src];handofgod=red prophet'>red prophet</a>|<b>RED FOLLOWER</b>|<a href='?src=\ref[src];handofgod=clear'>employee</a>|blue follower|blue prophet"
+			text += "<b>RED PROPHET</b>|<a href='?src=\ref[src];handofgod=red follower'>red follower</a>|<a href='?src=\ref[src];handofgod=clear'>employee</a>|<a href='?src=\ref[src];handofgod=blue follower'>blue follower</a>|<a href='?src=\ref[src];handofgod=blue prophet'>blue prophet</a>"
+		else if (src in ticker.mode.red_followers)
+			text += "<a href='?src=\ref[src];handofgod=red prophet'>red prophet</a>|<b>RED FOLLOWER</b>|<a href='?src=\ref[src];handofgod=clear'>employee</a>|<a href='?src=\ref[src];handofgod=blue follower'>blue follower</a>|<a href='?src=\ref[src];handofgod=blue prophet'>blue prophet</a>"
+		else if (src in ticker.mode.blue_followers)
+			text += "<a href='?src=\ref[src];handofgod=red prophet'>red prophet</a>|<a href='?src=\ref[src];handofgod=red follower'>red follower</a>|<a href='?src=\ref[src];handofgod=clear'>employee</a>|BLUE FOLLOWER|<a href='?src=\ref[src];handofgod=blue prophet'>blue prophet</a>"
+		else if (src in ticker.mode.blue_prophets)
+			text += "<a href='?src=\ref[src];handofgod=red prophet'>red prophet</a>|<a href='?src=\ref[src];handofgod=red follower'>red follower</a>|<a href='?src=\ref[src];handofgod=clear'>employee</a>|<a href='?src=\ref[src];handofgod=blue follower'>blue follower</a>|BLUE PROPHET"
 		else
-			text += "<a href='?src=\ref[src];handofgod=red prophet'>red prophet</a>|<a href='?src=\ref[src];handofgod=red follower'>red follower</a>|<b>EMPLOYEE</b>|blue follower|blue prophet"
+			text += "<a href='?src=\ref[src];handofgod=red prophet'>red prophet</a>|<a href='?src=\ref[src];handofgod=red follower'>red follower</a>|<b>EMPLOYEE</b>|<a href='?src=\ref[src];handofgod=blue follower'>blue follower</a>|<a href='?src=\ref[src];handofgod=blue prophet'>blue prophet</a>"
 		sections["follower"] = text
 
 		/** MONKEY ***/
@@ -510,22 +514,22 @@ datum/mind
 					if(src in ticker.mode.red_followers)
 						ticker.mode.red_followers -= src
 						current << "<span class='danger'><b>You have been brainwashed... again!  You are no longer a follower!</b></span>"
-						ticker.mode.update_red_follower_icons_removed(src) //todo: make this proc
+						ticker.mode.update_red_follower_icons_removed(src)
 						special_role = null
 					if(src in ticker.mode.red_prophets)
 						ticker.mode.red_prophets -= src
-						current << "span class='danger'><b>You have been brainwashed... again!  You are no longer a prophet!</b></span>"
-						ticker.mode.update_red_follower_icons_removed(src) //ditto
+						current << "<span class='danger'><b>You have been brainwashed... again!  You are no longer a prophet!</b></span>"
+						ticker.mode.update_red_follower_icons_removed(src)
 						special_role = null
 					if(src in ticker.mode.blue_followers)
 						ticker.mode.blue_followers -= src
 						current << "<span class='danger'><b>You have been brainwashed... again!  You are no longer a follower!</b></span>"
-//						ticker.mode.update_blue_follower_icons_removed(src) //ditto
+						ticker.mode.update_blue_follower_icons_removed(src)
 						special_role = null
 					if(src in ticker.mode.blue_prophets)
 						ticker.mode.blue_prophets -= src
 						current << "<span class='danger'><b>You have been brainwashed... again!  You are no longer a prophet!</b></span>"
-//						ticker.mode.update_blue_follower_icons_removed(src) //ditto
+						ticker.mode.update_blue_follower_icons_removed(src)
 						special_role = null
 					message_admins("[key_name_admin(usr)] has de-follower'ed [current].")
 					log_admin("[key_name(usr)] has de-follower'ed [current].")
@@ -540,7 +544,10 @@ datum/mind
 					else
 						return
 					ticker.mode.red_followers += src
+					ticker.mode.blue_prophets -= src
+					ticker.mode.blue_followers -= src
 					ticker.mode.update_red_follower_icons_added(src)
+					ticker.mode.update_blue_follower_icons_removed(src)
 					special_role = "Red Follower"
 					message_admins("[key_name_admin(usr)] has red follower'ed [current].")
 					log_admin("[key_name(usr)] has red follower'ed [current].")
@@ -554,10 +561,49 @@ datum/mind
 					else
 						return
 					ticker.mode.red_prophets += src
+					ticker.mode.blue_prophets -= src
+					ticker.mode.blue_followers -= src
 					ticker.mode.update_all_red_follower_icons(src)
+					ticker.mode.update_blue_follower_icons_removed(src)
 					special_role = "Red Prophet"
 					message_admins("[key_name_admin(usr)] has red prophet'ed [current].")
 					log_admin("[key_name(usr)] has red prophet'ed [current].")
+
+				if("blue follower")
+					if(src in ticker.mode.blue_prophets)
+						ticker.mode.blue_prophets -= src
+						ticker.mode.update_blue_follower_icons_removed(src)
+						current << "<span class='danger'><b>A greater deity has severed your spirital link to your god.  You are no longer a prophet.</b></span>"
+					else if(!(src in ticker.mode.blue_followers))
+						current << "<span class='danger'><b>You are now a follower! You will now serve your cult to the death. You can identify your allies by the blue four sided star icons, and your prophet by the eight-sided blue and gold icon. Help them enforce your god's will on the station!</b></span>"
+					else
+						return
+					ticker.mode.blue_followers += src
+					ticker.mode.red_prophets -= src
+					ticker.mode.red_followers -= src
+					ticker.mode.update_blue_follower_icons_added(src)
+					ticker.mode.update_red_follower_icons_removed(src)
+					special_role = "Blue Follower"
+					message_admins("[key_name_admin(usr)] has blue follower'ed [current].")
+					log_admin("[key_name(usr)] has blue follower'ed [current].")
+
+				if("blue prophet")
+					if(src in ticker.mode.blue_followers)
+						ticker.mode.blue_followers -= src
+						ticker.mode.update_blue_follower_icons_removed(src)
+						current << "<span class='danger'><b>A greater deity has linked your spirit to your deity.  You are now a prophet.</b></span>"
+					else if(!(src in ticker.mode.blue_prophets))
+						current << "<span class='danger'><b>You are now a follower and a prophet!</b></span>"
+					else
+						return
+					ticker.mode.blue_prophets += src
+					ticker.mode.red_prophets -= src
+					ticker.mode.red_followers -= src
+					ticker.mode.update_all_blue_follower_icons(src)
+					ticker.mode.update_red_follower_icons_removed(src)
+					special_role = "Blue Prophet"
+					message_admins("[key_name_admin(usr)] has blue prophet'ed [current].")
+					log_admin("[key_name(usr)] has blue prophet'ed [current].")
 
 		else if (href_list["revolution"])
 			switch(href_list["revolution"])
