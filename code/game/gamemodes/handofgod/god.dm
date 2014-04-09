@@ -5,8 +5,9 @@
 	icon_state = "marker" //Placeholder
 	see_invisible = SEE_INVISIBLE_MINIMUM
 	invisibility = INVISIBILITY_OBSERVER
-	see_in_dark = 8
+	see_in_dark = 0 //so you can hide in maint from omniscient beings
 	sight = SEE_TURFS | SEE_MOBS | SEE_OBJS | SEE_SELF
+	universal_speak = 1 //only lesser mortals have a language barrier.
 
 	var/god_points = 0 //Used to interact with your followers.
 	var/max_god_points = 100
@@ -68,7 +69,7 @@
 		god_points = Clamp(god_points + points, 0, max_god_points)
 		hud_used.deity_power_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='cyan'>[src.god_points]  </font></div>"
 
-
+//todo: follower hud
 
 /mob/camera/god/say(var/message)
 	if (!message)
@@ -107,6 +108,3 @@
 
 /mob/camera/god/Move(var/NewLoc, var/Dir = 0)
 		loc = NewLoc
-
-///mob/camera/god/god_act()
-//	return

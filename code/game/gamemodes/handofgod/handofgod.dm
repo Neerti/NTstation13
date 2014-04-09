@@ -69,9 +69,9 @@
 //		red_follower_mind.special_role = "Red Follower"
 //		obj_count++
 
-/////////////////////
-//++Convert procs++//
-/////////////////////
+/////////////////
+//Convert procs//
+/////////////////
 
 //red
 
@@ -97,10 +97,26 @@
 
 //blue
 
+/datum/game_mode/proc/add_blue_follower(var/datum/mind/blue_follower_mind)
+	var/mob/living/carbon/human/H = blue_follower_mind.current//Check to see if the potential follower is implanted
+	if(isloyal(H))
+		return 0
+	if((blue_follower_mind in red_followers) || (blue_follower_mind in red_prophets) || (blue_follower_mind in blue_followers) || (blue_follower_mind in blue_prophets)) //sanity
+		return 0
+	var/obj/item/weapon/nullrod/N = locate() in H
+	if(N)
+		H << "Your nullrod prevented the deity from brainwashing you."
+		return 0
+	blue_followers += blue_follower_mind
+	blue_follower_mind.current << "<span class='danger'>You are now a follower of ! You will now serve your cult to the death. You can identify your allies by the blue four sided star icons, and your prophet by the eight-sided blue and gold icon. Help them enforce your god's will on the station!</span>"
+	blue_follower_mind.current.attack_log += "\[[time_stamp()]\] <font color='red'>Has been converted to the blue follower cult!</font>"
+	blue_follower_mind.special_role = "blue Follower"
+	update_blue_follower_icons_added(blue_follower_mind)
+	return 1
 
-///////////////////////
-//++Deconvert procs++//
-///////////////////////
+//////////////////
+//Deconvert proc//
+//////////////////
 
 /datum/game_mode/proc/remove_follower(var/datum/mind/follower_mind) //this deconverts both sides
 	if(follower_mind in red_followers || blue_followers)
@@ -112,19 +128,21 @@
 		follower_mind.current << "<span class='danger'><b>Your mind has been cleared from the brainwashing the followers have done to you.  Now you serve yourself and the crew.</b></span>"
 
 		update_red_follower_icons_removed(follower_mind)
-//		update_blue_follower_icons_removed(follower_mind) //todo: make this proc
+		update_blue_follower_icons_removed(follower_mind)
 		for(var/mob/living/M in view(follower_mind.current))
 			M << "[follower_mind.current] looks like they just remembered their real allegiance!"
 
-///////////////////////////
-//++Follower icon procs++//
-///////////////////////////
+///////////////////////
+//Follower icon procs//
+///////////////////////
 
-/////////////////////////////////
-//Red follower update all icons//
-/////////////////////////////////
+/////////////////////////////
+//Follower update all icons//
+/////////////////////////////
 
 //remember that plural means it's the list, singular is the var defined inside the proc.
+
+//Red
 
 /datum/game_mode/proc/update_all_red_follower_icons()
 	spawn(0)
@@ -166,10 +184,53 @@
 							var/I = image('icons/mob/mob.dmi', loc = red_follower_1.current, icon_state = "follower-red")
 							red_follower.current.client.images += I
 
+//Blue
 
-///////////////////////////////////
-//Red follower update icons added//
-///////////////////////////////////
+/datum/game_mode/proc/update_all_blue_follower_icons()
+	spawn(0)
+		for(var/datum/mind/blue_prophet_mind in blue_prophets)
+			if(blue_prophet_mind.current)
+				if(blue_prophet_mind.current.client)
+					for(var/image/I in blue_prophet_mind.current.client.images)
+						if(I.icon_state == "follower-blue" || I.icon_state == "prophet-blue")
+							del(I)
+
+		for(var/datum/mind/blue_follower_mind in blue_followers)
+			if(blue_follower_mind.current)
+				if(blue_follower_mind.current.client)
+					for(var/image/I in blue_follower_mind.current.client.images)
+						if(I.icon_state == "follower-blue" || I.icon_state == "prophet-blue")
+							del(I)
+
+		for(var/datum/mind/blue_prophet in blue_prophets)
+			if(blue_prophet.current)
+				if(blue_prophet.current.client)
+					for(var/datum/mind/blue_follower in blue_followers)
+						if(blue_follower.current)
+							var/I = image('icons/mob/mob.dmi', loc = blue_follower.current, icon_state = "follower-blue")
+							blue_prophet.current.client.images += I
+					for(var/datum/mind/blue_prophet_1 in blue_prophets)
+						if(blue_prophet_1.current)
+							var/I = image('icons/mob/mob.dmi', loc = blue_prophet_1.current, icon_state = "prophet-blue")
+							blue_prophet.current.client.images += I
+
+		for(var/datum/mind/blue_follower in blue_followers)
+			if(blue_follower.current)
+				if(blue_follower.current.client)
+					for(var/datum/mind/blue_prophet in blue_prophets)
+						if(blue_prophet.current)
+							var/I = image('icons/mob/mob.dmi', loc = blue_prophet.current, icon_state = "prophet-blue")
+							blue_follower.current.client.images += I
+					for(var/datum/mind/blue_follower_1 in blue_followers)
+						if(blue_follower_1.current)
+							var/I = image('icons/mob/mob.dmi', loc = blue_follower_1.current, icon_state = "follower-blue")
+							blue_follower.current.client.images += I
+
+///////////////////////////////
+//Follower update icons added//
+///////////////////////////////
+
+//Red
 
 /datum/game_mode/proc/update_red_follower_icons_added(datum/mind/red_follower_mind)
 	spawn(0)
@@ -193,9 +254,35 @@
 					var/image/J = image('icons/mob/mob.dmi', loc = red_follower_mind_1.current, icon_state = "follower-red")
 					red_follower_mind.current.client.images += J
 
-/////////////////////////////////////
-//Red follower update icons removed//
-/////////////////////////////////////
+//Blue
+
+/datum/game_mode/proc/update_blue_follower_icons_added(datum/mind/blue_follower_mind)
+	spawn(0)
+		for(var/datum/mind/blue_prophet_mind in blue_prophets)
+			if(blue_prophet_mind.current)
+				if(blue_prophet_mind.current.client)
+					var/I = image('icons/mob/mob.dmi', loc = blue_follower_mind.current, icon_state = "follower-blue")
+					blue_prophet_mind.current.client.images += I
+			if(blue_follower_mind.current)
+				if(blue_follower_mind.current.client)
+					var/image/J = image('icons/mob/mob.dmi', loc = blue_prophet_mind.current, icon_state = "prophet-blue")
+					blue_follower_mind.current.client.images += J
+
+		for(var/datum/mind/blue_follower_mind_1 in blue_followers)
+			if(blue_follower_mind_1.current)
+				if(blue_follower_mind_1.current.client)
+					var/I = image('icons/mob/mob.dmi', loc = blue_follower_mind.current, icon_state = "follower-blue")
+					blue_follower_mind_1.current.client.images += I
+			if(blue_follower_mind.current)
+				if(blue_follower_mind.current.client)
+					var/image/J = image('icons/mob/mob.dmi', loc = blue_follower_mind_1.current, icon_state = "follower-blue")
+					blue_follower_mind.current.client.images += J
+
+/////////////////////////////////
+//Follower update icons removed//
+/////////////////////////////////
+
+//Red
 
 /datum/game_mode/proc/update_red_follower_icons_removed(datum/mind/red_follower_mind)
 	spawn(0)
@@ -217,4 +304,28 @@
 			if(red_follower_mind.current.client)
 				for(var/image/I in red_follower_mind.current.client.images)
 					if(I.icon_state == "follower-red" || I.icon_state == "prophet-red")
+						del(I)
+
+//Blue
+
+/datum/game_mode/proc/update_blue_follower_icons_removed(datum/mind/blue_follower_mind)
+	spawn(0)
+		for(var/datum/mind/blue_prophet_mind in blue_prophets)
+			if(blue_prophet_mind.current)
+				if(blue_prophet_mind.current.client)
+					for(var/image/I in blue_prophet_mind.current.client.images)
+						if((I.icon_state == "follower-blue" || I.icon_state == "prophet-blue") && I.loc == blue_follower_mind.current)
+							del(I)
+
+		for(var/datum/mind/blue_follower_mind_1 in blue_followers)
+			if(blue_follower_mind_1.current)
+				if(blue_follower_mind_1.current.client)
+					for(var/image/I in blue_follower_mind_1.current.client.images)
+						if((I.icon_state == "follower-blue" || I.icon_state == "prophet-blue") && I.loc == blue_follower_mind.current)
+							del(I)
+
+		if(blue_follower_mind.current)
+			if(blue_follower_mind.current.client)
+				for(var/image/I in blue_follower_mind.current.client.images)
+					if(I.icon_state == "follower-blue" || I.icon_state == "prophet-blue")
 						del(I)

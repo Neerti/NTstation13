@@ -466,7 +466,7 @@
 	if(client)
 		src << sound(null, repeat = 0, wait = 0, volume = 85, channel = 1) // stop the jams for AIs
 	var/mob/camera/god/O = new (loc,,,1)
-	O.invisibility = 0
+	O.invisibility = 101
 
 	if(mind)
 		mind.transfer_to(O)
