@@ -196,9 +196,9 @@
 
 	log_admin("[key_name(src)] : [msg]")
 	var/tempmsg = msg
-	msg = "<font color=\"#045FB4\"><i><span class='game say'>Divinity Chat, <span class='name'>[name]</span> <span class='message'>[tempmsg]</span></span></i></font>"
+	msg = "<font color=\"#045FB4\"><i><span class='game say'>Divinity Chat, <span class='name'>[name]</span> says, <span class='message'>[tempmsg]</span></span></i></font>"
 	for(var/mob/M in mob_list)
 		if(isgod(M) || isobserver(M))
 			M.show_message(msg, 2)
-			src << msg
+	src << msg
 	return

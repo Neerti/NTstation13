@@ -89,19 +89,16 @@
 
 /mob/camera/god/proc/god_talk(message)
 	log_say("[key_name(src)] : [message]")
-
 	message = trim(copytext(sanitize(message), 1, MAX_MESSAGE_LEN))
-
 	if (!message)
 		return
 
 	var/message_a = say_quote(message)
-	var/rendered = "<font color=\"#045FB4\"><i><span class='game say'>Divine Telepathy, <span class='name'>[name]</span> <span class='message'>[message_a]</span></span></i></font>"
-
+	var/rendered = "<font color='#045FB4'><i><span class='game say'>Divine Telepathy, <span class='name'>[name]</span> <span class='message'>[message_a]</span></span></i></font>"
 	for (var/mob/M in mob_list)
 		if(isyourprophet(M,src) || isobserver(M))
 			M.show_message(rendered, 2)
-			src << rendered
+	src << rendered
 
 /mob/camera/god/emote(var/act,var/m_type=1,var/message = null)
 	return

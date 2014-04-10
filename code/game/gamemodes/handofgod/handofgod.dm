@@ -61,13 +61,9 @@
 ///////////////
 
 /datum/game_mode/proc/greet_red_follower(var/datum/mind/red_follower_mind, var/you_are=1)
-//	var/obj_count = 1
 	if (you_are)
 		red_follower_mind.current << "<span class='danger'><B>You are a follwer of the cult of   !</span>"//todo: find way to get god name to show here
-//	for(var/datum/objective/objective in red_follower_mind.objectives) //followers don't actually get objectives, the god does.
-//		red_follower_mind.current << "<B>Objective #[obj_count]</B>: [objective.explanation_text]"
-//		red_follower_mind.special_role = "Red Follower"
-//		obj_count++
+
 
 /////////////////
 //Convert procs//
