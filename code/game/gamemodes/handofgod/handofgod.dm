@@ -5,17 +5,21 @@
 	var/list/datum/mind/blue_prophets = list()
 	var/list/datum/mind/blue_followers = list()
 
-	var/list/datum/mind/neutral_prophets = list() //for admin abuse
-	var/iist/datum/mind/neutral_followers = list()
+//	var/list/datum/mind/neutral_prophets = list() //for admin abuse if I ever get around to it.
+//	var/iist/datum/mind/neutral_followers = list()
+
+	var/list/datum/mind/unassigned_followers = list() //for roundstart team assigning
+	var/list/datum/mind/assigned_to_red = list() //we will be a red follower after the game starts.
+	var/list/datum/mind/assigned_to_blue = list() //ditto for blue team.
 
 /datum/game_mode/handofgod
 	name = "hand of god"
 	config_tag = "handofgod"
 	antag_flag = BE_CULTIST //deities are handled seperately
 
-	required_players = 25 //6-8 followers total, everyone else is crew
-	required_enemies = 6 //three red, three blue
-	recommended_enemies = 8
+	required_players = 1 //6-8 followers total, everyone else is crew  if this says one it's for debugging, and if it's in final build then scream at neerti
+	required_enemies = 1 //three red, three blue
+	recommended_enemies = 1
 
 	uplink_welcome = "Divine Uplink Console:"
 	uplink_uses = 10
@@ -37,7 +41,7 @@
 //Pre setup//
 /////////////
 
-/datum/game_mode/handofgod/pre_setup() //this only works for red followers atm
+/datum/game_mode/handofgod/pre_setup() //
 	if(config.protect_roles_from_antagonist)
 		restricted_jobs += protected_jobs
 
@@ -51,10 +55,53 @@
 			break
 		var/datum/mind/follower = pick(antag_candidates)
 		antag_candidates -= follower
-		red_followers += follower //todo: add blue followers too
-		log_game("[follower.key] (ckey) has been selected as a red follower")
+		unassigned_followers += follower
+//		log_game("[follower.key] (ckey) has been selected as a red follower")
+		world << "[follower.key] has been chosen to be a follower." //debug stuff
+		world << "recommended_enemies = [recommended_enemies]"
+//	return (unassigned_followers.len>=required_enemies)
 
-	return (red_followers.len>=required_enemies)
+//	var/team_cap = required_enemies / 2
+
+	for(var/team_cap = required_enemies / 2 to recommended_enemies)
+		if(unassigned_followers.len == team_cap)
+			world << "Loop for unassigned length was broken for red." //debug
+			world << "team_cap = [team_cap]"
+			break
+		var/datum/mind/chosen = pick(unassigned_followers)
+		unassigned_followers -= chosen
+		world << "[chosen.key] was removed from unassigned list." //debug
+		world << "team_cap = [team_cap]"
+		assigned_to_red += chosen
+		world << "[chosen.key] was placed on assign to red list." //debug
+		world << "team_cap = [team_cap]"
+		add_red_follower(chosen)
+		world << "[chosen.key] was converted to red." //debug
+		world << "team_cap = [team_cap]"
+
+	for(var/team_cap = required_enemies to recommended_enemies)
+		if(!unassigned_followers.len)
+			world << "Loop for unassigned lengh was broken for blue." //debug
+			world << "team_cap = [team_cap]"
+			break
+		var/datum/mind/chosen = pick(unassigned_followers)
+		unassigned_followers -= chosen
+		world << "[chosen.key] was removed from unassigned list." //debug
+		world << "team_cap = [team_cap]"
+		assigned_to_blue += chosen
+		world << "[chosen.key] was placed on assign to blue list." //debug
+		world << "team_cap = [team_cap]"
+		add_blue_follower(chosen)
+		world << "[chosen.key] was converted to blue." //debug
+		world << "team_cap = [team_cap]"
+	return 1
+
+//	unassigned_followers.Cut(,team_cap)
+//	world << "Unassigned followers were cut."
+
+/datum/game_mode/handofgod/post_setup() //Icons don't work properly at roundstart, hacky but it works.
+	update_all_red_follower_icons()
+	update_all_blue_follower_icons()
 
 ///////////////
 //Greet procs//
@@ -71,42 +118,49 @@
 
 //red
 
-/datum/game_mode/proc/add_red_follower(var/datum/mind/red_follower_mind)
+/datum/game_mode/proc/add_red_follower(datum/mind/red_follower_mind)
 	var/mob/living/carbon/human/H = red_follower_mind.current//Check to see if the potential follower is implanted
 	if(isloyal(H))
+		H << "<span class='danger'>Your loyalty implant blocked out the deity's influence.</span>"
 		return 0
 	if((red_follower_mind in red_followers) || (red_follower_mind in red_prophets) || (red_follower_mind in blue_followers) || (red_follower_mind in blue_prophets)) //sanity
+		H << "<span class='danger'>You already belong to a deity.  Your strong faith has blocked out the conversion attempt.</span>"
 		return 0
 	var/obj/item/weapon/nullrod/N = locate() in H
 	if(N)
-		H << "Your nullrod prevented the deity from brainwashing you."
+		H << "<span class='danger'>Your null rod prevented the deity from brainwashing you.</span>"
 		return 0
 	red_followers += red_follower_mind
-	red_follower_mind.current << "<span class='danger'>You are now a follower of ! You will now serve your cult to the death. You can identify your allies by the red four sided star icons, and your prophet by the eight-sided red and gold icon. Help them enforce your god's will on the station!</span>"
+	red_follower_mind.current << "<span class='danger'>You are a follower of a newly created deity! You will now serve your cult to the death. You can identify your allies by the red four sided star icons, and your prophet by the eight-sided red and gold icon. Help them enforce your god's will on the station!</span>"
 	red_follower_mind.current.attack_log += "\[[time_stamp()]\] <font color='red'>Has been converted to the red follower cult!</font>"
 	red_follower_mind.special_role = "Red Follower"
 	update_red_follower_icons_added(red_follower_mind)
 	return 1
 
+/mob/living/carbon/human/verb/testconvert()
+	ticker.mode.add_red_follower(src.mind)
 
-
+/mob/living/carbon/human/verb/resetredicons()
+	ticker.mode.update_all_red_follower_icons()
 
 //blue
 
 /datum/game_mode/proc/add_blue_follower(var/datum/mind/blue_follower_mind)
 	var/mob/living/carbon/human/H = blue_follower_mind.current//Check to see if the potential follower is implanted
 	if(isloyal(H))
+		H << "<span class='danger'>Your loyalty implant blocked out the deity's influence.</span>"
 		return 0
 	if((blue_follower_mind in red_followers) || (blue_follower_mind in red_prophets) || (blue_follower_mind in blue_followers) || (blue_follower_mind in blue_prophets)) //sanity
+		H << "<span class='danger'>You already belong to a deity.  Your strong faith has blocked out the conversion attempt.</span>"
 		return 0
 	var/obj/item/weapon/nullrod/N = locate() in H
 	if(N)
-		H << "Your nullrod prevented the deity from brainwashing you."
+		H << "<span class='danger'>Your null rod prevented the deity from brainwashing you.</span>"
 		return 0
 	blue_followers += blue_follower_mind
-	blue_follower_mind.current << "<span class='danger'>You are now a follower of ! You will now serve your cult to the death. You can identify your allies by the blue four sided star icons, and your prophet by the eight-sided blue and gold icon. Help them enforce your god's will on the station!</span>"
+	blue_follower_mind.current << "<span class='danger'>You are a follower of a newly created deity! You will now serve your cult to the death. You can identify your allies by the blue four sided star icons, and your prophet by the eight-sided blue and gold icon. Help them enforce your god's will on the station!</span>"
 	blue_follower_mind.current.attack_log += "\[[time_stamp()]\] <font color='red'>Has been converted to the blue follower cult!</font>"
-	blue_follower_mind.special_role = "blue Follower"
+	blue_follower_mind.special_role = "Blue Follower"
 	update_blue_follower_icons_added(blue_follower_mind)
 	return 1
 
