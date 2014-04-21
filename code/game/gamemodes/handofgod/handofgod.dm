@@ -63,8 +63,8 @@
 
 //	var/team_cap = required_enemies / 2
 
-	for(var/team_cap = required_enemies / 2 to recommended_enemies)
-		if(unassigned_followers.len == team_cap)
+	for(var/team_cap = 0, team_cap == 3, team_cap ++)
+		if(unassigned_followers.len == 3)
 			world << "Loop for unassigned length was broken for red." //debug
 			world << "team_cap = [team_cap]"
 			break
@@ -79,8 +79,8 @@
 		world << "[chosen.key] was converted to red." //debug
 		world << "team_cap = [team_cap]"
 
-	for(var/team_cap = required_enemies to recommended_enemies)
-		if(!unassigned_followers.len)
+	for(var/team_cap = 0, team_cap == 3, team_cap ++)
+		if(unassigned_followers.len == 0)
 			world << "Loop for unassigned lengh was broken for blue." //debug
 			world << "team_cap = [team_cap]"
 			break
@@ -99,6 +99,10 @@
 //	unassigned_followers.Cut(,team_cap)
 //	world << "Unassigned followers were cut."
 
+//////////////
+//Post Setup//
+//////////////
+
 /datum/game_mode/handofgod/post_setup() //Icons don't work properly at roundstart, hacky but it works.
 	update_all_red_follower_icons()
 	update_all_blue_follower_icons()
@@ -107,7 +111,7 @@
 //Greet procs//
 ///////////////
 
-/datum/game_mode/proc/greet_red_follower(var/datum/mind/red_follower_mind, var/you_are=1)
+/datum/game_mode/proc/greet_red_follower(var/datum/mind/red_follower_mind, var/you_are=1) //is this even used?
 	if (you_are)
 		red_follower_mind.current << "<span class='danger'><B>You are a follwer of the cult of   !</span>"//todo: find way to get god name to show here
 
@@ -137,10 +141,10 @@
 	update_red_follower_icons_added(red_follower_mind)
 	return 1
 
-/mob/living/carbon/human/verb/testconvert()
+/mob/living/carbon/human/verb/testconvert() //debug
 	ticker.mode.add_red_follower(src.mind)
 
-/mob/living/carbon/human/verb/resetredicons()
+/mob/living/carbon/human/verb/resetredicons() //debug
 	ticker.mode.update_all_red_follower_icons()
 
 //blue

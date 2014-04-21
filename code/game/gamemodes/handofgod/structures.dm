@@ -103,15 +103,38 @@
 	health = 250
 	maxhealth = 250
 
-/obj/structure/divine/convertalter //todo: make desc reflect the god's name.
-	name = "Conversion Alter"
-	desc = "An alter dedicated to a deity.  Cultists can \"forcefully teach\" their non-aligned crewmembers to join their side and take up their deity."
-	icon_state = "convertalter"
+/obj/structure/divine/convertaltar //todo: make desc reflect the god's name.
+	name = "Conversion Altar"
+	desc = "An altar dedicated to a deity.  Cultists can \"forcefully teach\" their non-aligned crewmembers to join their side and take up their deity."
+	icon_state = "convertaltar"
 
-/obj/structure/divine/sacrificealter
-	name = "Sacrifical Alter"
-	desc = "An alter designed to perform blood sacrifice for a deity.  The cultists performing the sacrifice will gain a powerful material to use in their forge.  Sacrificing a prophet will yield even better results."
-	icon_state = "sacrificealter"
+	attack_hand(mob/living/user as mob)
+		var/mob/living/carbon/human/H = locate(/mob/living/carbon) in loc
+		if(!isfollower(user)) //Is the user a follower?
+			user << "<span class='notice'>You can't seem to do anything useful with this.</span>"
+			return
+		if(!H || !H.mind)
+			user << "<span class='danger'>Nobody sentient is on top of the alter, if anything at all.</span>"
+			return
+		if(src.side == ("red")) //Is the altar red?
+			if(isredfollower(user))
+				user << "<span class='notice'>You invoke the conversion ritual.</span>"
+				ticker.mode.add_red_follower(H.mind)
+				return
+			return
+		else if(src.side == ("blue")) //Or blue?
+			if(isbluefollower(user))
+				user <<"<span class='notice'>You inoke the conversion ritual.</span>"
+				ticker.mode.add_blue_follower(H.mind)
+				return
+			return
+		else //Or maybe something went wrong.
+			user << "Something went wrong when the altar was made, and is unaligned.  You should adminhelp this."
+
+/obj/structure/divine/sacrificealtar
+	name = "Sacrifical Altar"
+	desc = "An altar designed to perform blood sacrifice for a deity.  The cultists performing the sacrifice will gain a powerful material to use in their forge.  Sacrificing a prophet will yield even better results."
+	icon_state = "sacrificealtar"
 
 /obj/structure/divine/puddle
 	name = "Puddle of Healing"

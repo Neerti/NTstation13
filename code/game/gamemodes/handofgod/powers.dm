@@ -150,13 +150,13 @@
 				O.deity = src
 				O.side = src.side
 				O.postbuild()
-			if("convert alter")
-				var/obj/structure/divine/convertalter/O = new(loc)
+			if("convert altar")
+				var/obj/structure/divine/convertaltar/O = new(loc)
 				O.deity = src
 				O.side = src.side
 				O.postbuild()
-			if("sacrifice alter")
-				var/obj/structure/divine/sacrificealter/O = new(loc)
+			if("sacrifice altar")
+				var/obj/structure/divine/sacrificealtar/O = new(loc)
 				O.deity = src
 				O.side = src.side
 				O.postbuild()

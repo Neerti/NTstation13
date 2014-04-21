@@ -140,11 +140,40 @@ proc/isprophet(A)
 proc/isfollower(A)
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
-		if(H.mind in ticker.mode.red_followers || ticker.mode.blue_followers)
+		if(H.mind in ticker.mode.red_followers)
+			return 1
+		if(H.mind in ticker.mode.red_prophets)
+			return 1
+		if(H.mind in ticker.mode.blue_followers)
+			return 1
+		if(H.mind in ticker.mode.blue_prophets)
 			return 1
 		else
 			return 0
 	return 0
+
+proc/isredfollower(A)
+	if(istype(A, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = A
+		if(H.mind in ticker.mode.red_followers)
+			return 1
+		if(H.mind in ticker.mode.red_prophets)
+			return 1
+		else
+			return 0
+	return 0
+
+proc/isbluefollower(A)
+	if(istype(A, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = A
+		if(H.mind in ticker.mode.blue_followers)
+			return 1
+		if(H.mind in ticker.mode.blue_prophets)
+			return 1
+		else
+			return 0
+	return 0
+
 
 proc/isorgan(A)
 	if(istype(A, /obj/item/organ/limb))
