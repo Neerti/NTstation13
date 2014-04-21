@@ -5,6 +5,9 @@
 	else if(Y && (!isturf(src.loc) || istype(src.loc, /turf/space))) //no building in space.
 		src << "<span class='danger'>Your structure would just float away, it needs to be on stable ground.</font>"
 		return 0
+	else if(Y &&(istype(src.loc, /obj/structure))) //no stacking structures.
+		src << "<span class='danger'>There is another structure there.  Select an empty spot for your structure.</span>"
+		return 0
 	else	return 1
 
 /mob/camera/god/verb/returntonexus()
@@ -20,18 +23,47 @@
 /mob/camera/god/verb/newprophet()
 	set category = "God Powers"
 	set name = "Appoint Prophet (100)"
+	var/choice_red
+	var/choice_blue
 	if(!powerc(100))
 		src << "You don't have enough power to make a prophet yet."
 		return
-	var/choice = input("Choose who you wish to make your prophet","Prophet Creation") as null|anything in followers
-	if(choice)
-		var/mob/living/carbon/human/B = choice
+	if(src.side == "red")
+		if(ticker.mode.red_prophets.len >= 1)
+			src << "You can only have one prophet alive at a time."
+		else
+			choice_red = input("Choose a follower to make into your prophet","Prophet Creation") as null|anything in ticker.mode.red_followers
+	else if (src.side == "blue")
+		if(ticker.mode.blue_prophets.len >= 1)
+			src << "You can only have one prophet alive at a time."
+		else
+			choice_blue = input("Choose a follower to make into your prophet","Prophet Creation") as null|anything in ticker.mode.blue_followers
+	else
+		src << "You appear to be unaligned, and cannot have any followers, nor prophets."
+		return
+//	var/choice = input("Choose who you wish to make your prophet","Prophet Creation") as null|anything in followers
+	if(choice_red)
+		var/mob/living/carbon/human/B = choice_red
 		src << "You choose [B] as your prophet."
-		B.deity = src
-		B.prophet = 1
+//		B.deity = src
+//		B.prophet = 1
+		ticker.mode.red_prophets += B
+		ticker.mode.red_followers -= B
+		ticker.mode.update_all_red_follower_icons(B)
 		B << "Rejoice, for ye have been chosen to be thy generous god, [src]'s prophet!"
-		yourprophet = B
-		src.verbs -= /mob/camera/god/verb/newprophet
+//		yourprophet = B
+		src.add_points(-100)
+		return
+	if(choice_blue)
+		var/mob/living/carbon/human/B = choice_blue
+		src << "You choose [B] as your prophet."
+//		B.deity = src
+//		B.prophet = 1
+		ticker.mode.blue_prophets += B
+		ticker.mode.blue_followers -= B
+		ticker.mode.update_all_blue_follower_icons(B)
+		B << "Rejoice, for ye have been chosen to be thy generous god, [src]'s prophet!"
+//		yourprophet = B
 		src.add_points(-100)
 		return
 
@@ -83,7 +115,7 @@
 	set category = "God Powers"
 	set name = "Cure Disease (10)"
 
-/mob/camera/god/verb/testconvert()
+/mob/camera/god/verb/testconvert() //todo: remove this before release
 	set category = "God Powers"
 	set name = "Testing Convert Mob"
 	var/list/humans = list()
@@ -100,13 +132,54 @@
 
 /mob/camera/god/verb/disaster()
 	set category = "God Powers"
-	set name = "Invoke Disaster (300)"
+	set name = "Invoke Disaster (300)" //requires 20+ converts.
 	set desc = "Invokes the wrath of O'telbra Volema, god of chaos, causing random disastrous events."
+
+	if(powerc(300))
+		var/event
+		event = rand(0,9) //I tried pick() but it wouldn't work with paths.
+		switch(event)
+			if(0)
+				new /datum/round_event/meteor_wave()
+				message_admins("[src.name] has randomly invoked a meteor wave.")
+			if(1)
+				new /datum/round_event/communications_blackout()
+				message_admins("[src.name] has randomly invoked a communications blackout.")
+			if(2)
+				new /datum/round_event/carp_migration()
+				message_admins("[src.name] has randomly invoked a carp migration.")
+			if(3)
+				new /datum/round_event/radiation_storm()
+				message_admins("[src.name] has randomly invoked a rad storm.")
+			if(4)
+				new /datum/round_event/electrical_storm{lightsoutAmount = 2}()
+				message_admins("[src.name] has randomly invoked an electrical storm.")
+			if(5)
+				new /datum/round_event/spider_infestation()
+				message_admins("[src.name] has randomly invoked a spider infestation.")
+			if(6)
+				new /datum/round_event/vent_clog()
+				message_admins("[src.name] has randomly invoked a vent clog.")
+			if(7)
+				new /datum/round_event/prison_break()
+				message_admins("[src.name] has randomly invoked a prison break.")
+			if(8)
+				new /datum/round_event/spacevine()
+				message_admins("[src.name] has randomly invoked a spacevine infestation.")
+			if(9)
+				new /datum/round_event/wormholes()
+				message_admins("[src.name] has randomly invoked wormholes.")
+		src.add_points(-300)
+		return
 
 /mob/camera/god/verb/heavyion()
 	set category = "God Powers"
-	set name = "Heavy Ion(300)"
+	set name = "Heavy Ion(300)" //requires 20+ converts.
 	set desc = "Causes everything you can see to be ionized."
+
+	if(powerc(300))
+		empulse(src, 4, 8)
+		src.add_points(-300)
 
 /mob/camera/god/verb/buildnexus()
 	set category = "God Powers"

@@ -113,11 +113,11 @@
 		if(!isfollower(user)) //Is the user a follower?
 			user << "<span class='notice'>You can't seem to do anything useful with this.</span>"
 			return
-		if(!H || !H.mind)
+		if(!H || !H.mind) //If nothing is on top of the alter, or the mob has no mind, stop the proc.
 			user << "<span class='danger'>Nobody sentient is on top of the alter, if anything at all.</span>"
 			return
 		if(src.side == ("red")) //Is the altar red?
-			if(isredfollower(user))
+			if(isredfollower(user))//Is a red follower using it?
 				user << "<span class='notice'>You invoke the conversion ritual.</span>"
 				ticker.mode.add_red_follower(H.mind)
 				return
