@@ -128,10 +128,23 @@ proc/isyourprophet(A, D)
 		else
 			return 0
 	return 0
+/*
 proc/isprophet(A)
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.prophet)
+			return 1
+		else
+			return 0
+	return 0
+*/
+
+proc/isprophet(A) //todo: add a 'was prophet' var to humans so deities can't cheese the other team out of a sacrifice by making a new prophet asap
+	if(istype(A, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = A
+		if(H.mind in ticker.mode.red_prophets)
+			return 1
+		if(H.mind in ticker.mode.blue_prophets)
 			return 1
 		else
 			return 0
@@ -152,7 +165,7 @@ proc/isfollower(A)
 			return 0
 	return 0
 
-proc/isredfollower(A)
+proc/isredfollower(A) //also prophet
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.mind in ticker.mode.red_followers)

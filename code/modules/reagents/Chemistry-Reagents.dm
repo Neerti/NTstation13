@@ -287,6 +287,26 @@ datum
 						qdel(R)
 				T.Bless()
 
+		blessedblood
+			name = "Blessed Blood"
+			id = "blessedblood"
+			description = "A very rare liquid, it's rumored to make a person more resilient if it flows in their body."
+			color = "#C80000" // rgb: 200, 0, 0
+
+			on_mob_life(var/mob/living/M as mob)
+				if(!M) M = holder.my_atom
+				M.drowsyness = max(M.drowsyness-5, 0)
+				M.AdjustParalysis(-1)
+				M.AdjustStunned(-1)
+				M.AdjustWeakened(-1)
+				if(M.getOxyLoss() && prob(25)) M.adjustOxyLoss(-1*REM)
+				if(M.getBruteLoss() && prob(25)) M.heal_organ_damage(1*REM,0)
+				if(M.getFireLoss() && prob(25)) M.heal_organ_damage(0,1*REM)
+				if(M.getToxLoss() && prob(25)) M.adjustToxLoss(-1*REM)
+				..()
+				return
+
+
 		lube
 			name = "Space Lube"
 			id = "lube"

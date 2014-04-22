@@ -86,6 +86,7 @@
 	set category = "God Powers"
 	set name = "Smite (40)"
 	set desc = "Hits anything under you with a large amount of damage."
+
 	if(!powerc(40))
 		src << "You don't have enough power to do that."
 		return
@@ -94,9 +95,23 @@
 		src << "You smite [H] with your godly powers!"
 		H.adjustFireLoss(10)
 		H.adjustBruteLoss(10)
-		H.Weaken(5)
 		H << "You feel a sense of horrifying agony as you are smited by an unseen force!"
 	src.add_points(-40)
+
+/mob/camera/god/verb/holyword()
+	set category = "God Powers"
+	set name = "Holy Word (20)"
+	set desc = "Knocks out the mortal below you for a brief amount of time."
+
+	if(!powerc(20))
+		src << "You don't have enough power to do that."
+		return
+	for(var/mob/living/L in src.loc)
+		var/mob/living/T = L
+		src << "You whisper a word most holy to [T].  Moments later they faint!"
+		T.Paralyse(2)
+		T << "<span class='danger'><b>You hear something incomprehensible, then black out!</b></span>"
+	src.add_points(-20)
 
 /mob/camera/god/verb/summonguardians()
 	set category = "God Powers"
@@ -105,11 +120,18 @@
 
 /mob/camera/god/verb/bless()
 	set category = "God Powers"
-	set name = "Bless Cultist (20)"
+	set desc = "Blesses a follower, allowing them to be more resilient to stuns for a bit."
+	set name = "Bless Follower (20)"
 
-/mob/camera/god/verb/heal()
-	set category = "God Powers"
-	set name = "Healing Aura (2/sec)"
+	if(!powerc(20))
+		src << "You don't have enough power to do that."
+		return
+	for(var/mob/living/carbon/human/M in src.loc)
+		var/mob/living/carbon/human/H = M
+		src << "You grant a minor blessing to [H]."
+		H.reagents.add_reagent("blessedblood", 48) //lasts about two minutes.
+		H << "<span class='notice'>You feel warm for a moment, than you feel tough and stalward.</span>"
+	src.add_points(-40)
 
 /mob/camera/god/verb/cure()
 	set category = "God Powers"
@@ -204,7 +226,7 @@
 	set desc = "Create the foundation of a divine object."
 
 	if(powerc(75,1))
-		var/choice = input("Choose what you wish to create.","Divine structure") as null|anything in list("conduit","forge","convert alter",
+		var/choice = input("Choose what you wish to create.","Divine structure") as null|anything in list("ward","conduit","forge","convert alter",
 																											"sacrifice alter","holy puddle","gate",
 																											"power pylon","defense pylon","shrine")
 		if(!choice || !powerc(75))	return
@@ -213,6 +235,11 @@
 		for(var/mob/O in viewers(src, null))
 			O.show_message(text("<font color='blue'><b>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</B></font>"), 1) //todo:span classes
 		switch(choice)
+			if("ward")
+				var/obj/structure/divine/ward/O = new(loc)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
 			if("conduit")
 				var/obj/structure/divine/conduit/O = new(loc)
 				O.deity = src
