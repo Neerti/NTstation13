@@ -261,10 +261,50 @@
 		qdel(src)
 
 /obj/structure/divine/holder //used for building the structures.
-	name = "I'm an error." //Name is replaced by the object being built.
+	name = "I'm an error" //Name is replaced by the object being built.
 	desc = "My description is broken, report me to a coder." //ditto, also tells what is needed to finish.
 	icon_state = null //ditto
 	alpha = 100 //To show it's a holder and not the actual structure.
 	health = 20
 	maxhealth = 20
+
 	var/project = null //What is being built.  Determines what to spawn after construction is finished.
+	var/metal_cost = null //How much metal is needed to build
+	var/glass_cost = null //ditto
+	var/metal_complete = 0
+	var/glass_complete = 0
+
+/obj/structure/divine/holder/attackby(obj/item/stack/W, mob/user)
+	if(isnull(metal_cost))
+		metal_complete = 1
+	if(isnull(glass_cost))
+		glass_complete = 1
+	if(istype(W, /obj/item/stack/sheet/metal))
+		if(metal_complete == 1)
+			user << "You don't need to add anymore metal!"
+			return
+		if(W.amount < metal_cost)
+			user << "You need [metal_cost] sheets of metal to complete this."
+		else
+			var/obj/item/stack/sheet/metal/pile = W
+			pile.use(metal_cost)
+			user << "You use your metal sheets to construct the [name]."
+			src.metal_complete = 1
+	if(istype(W, /obj/item/stack/sheet/glass))
+		if(glass_complete == 1)
+			user << "You don't need to add anymore glass!"
+			return
+		if(W.amount < glass_cost)
+			user << "You need [glass_cost] sheets of glass to complete this."
+		else
+			var/obj/item/stack/sheet/glass/pile = W
+			pile.use(glass_cost)
+			user << "You use your glass sheets to construct the [name]."
+			src.glass_complete = 1
+	if(metal_complete && glass_complete == 1)
+		var/obj/structure/divine/S = new project(loc)
+		S.side = src.side
+		S.postbuild()
+		qdel(src)
+	return
+	..()

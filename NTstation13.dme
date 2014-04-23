@@ -277,6 +277,7 @@
 #include "code\game\gamemodes\cult\runes.dm"
 #include "code\game\gamemodes\cult\talisman.dm"
 #include "code\game\gamemodes\extended\extended.dm"
+#include "code\game\gamemodes\handofgod\forgeobjs.dm"
 #include "code\game\gamemodes\handofgod\god.dm"
 #include "code\game\gamemodes\handofgod\handofgod.dm"
 #include "code\game\gamemodes\handofgod\powers.dm"

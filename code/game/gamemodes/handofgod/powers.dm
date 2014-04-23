@@ -131,7 +131,7 @@
 		src << "You grant a minor blessing to [H]."
 		H.reagents.add_reagent("blessedblood", 48) //lasts about two minutes.
 		H << "<span class='notice'>You feel warm for a moment, than you feel tough and stalward.</span>"
-	src.add_points(-40)
+	src.add_points(-20)
 
 /mob/camera/god/verb/cure()
 	set category = "God Powers"
@@ -235,55 +235,97 @@
 		for(var/mob/O in viewers(src, null))
 			O.show_message(text("<font color='blue'><b>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</B></font>"), 1) //todo:span classes
 		switch(choice)
-			if("ward")
+			if("ward") //todo: remove this and add it to onclick
 				var/obj/structure/divine/ward/O = new(loc)
 				O.deity = src
 				O.side = src.side
 				O.postbuild()
 			if("conduit")
-				var/obj/structure/divine/conduit/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "conduit"
+				O.icon_state = "conduit"
 				O.side = src.side
+				O.metal_cost = 25
+				O.glass_cost = 10
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/conduit
 				O.postbuild()
 			if("forge")
-				var/obj/structure/divine/forge/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "forge"
+				O.icon_state = "forge"
 				O.side = src.side
+				O.metal_cost = 40
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/forge
 				O.postbuild()
 			if("convert altar")
-				var/obj/structure/divine/convertaltar/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "conversion altar"
+				O.icon_state = "convertaltar"
 				O.side = src.side
+				O.metal_cost = 20
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/convertaltar
 				O.postbuild()
 			if("sacrifice altar")
-				var/obj/structure/divine/sacrificealtar/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "sacrificial altar"
+				O.icon_state = "sacrificealtar"
 				O.side = src.side
+				O.metal_cost = 30
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/sacrificealtar
 				O.postbuild()
 			if("holy puddle")
-				var/obj/structure/divine/puddle/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "holy puddle"
+				O.icon_state = "puddle"
 				O.side = src.side
+				O.metal_cost = 15
+				O.glass_cost = 10
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/puddle
 				O.postbuild()
 			if("gate")
-				var/obj/structure/divine/gate/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "gate"
+				O.icon_state = "gate"
 				O.side = src.side
+				O.metal_cost = 40
+				O.glass_cost = 30
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/gate
 				O.postbuild()
 			if("power pylon")
-				var/obj/structure/divine/powerpylon/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "power pylon"
+				O.icon_state = "powerpylon"
 				O.side = src.side
+				O.metal_cost = 10
+				O.glass_cost = 30
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/powerpylon
 				O.postbuild()
 			if("defense pylon")
-				var/obj/structure/divine/defensepylon/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "defense pylon"
+				O.icon_state = "defensepylon"
 				O.side = src.side
+				O.metal_cost = 30
+				O.glass_cost = 40
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/defensepylon
 				O.postbuild()
 			if("shrine")
-				var/obj/structure/divine/shrine/O = new(loc)
-				O.deity = src
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "shrine"
+				O.icon_state = "shrine"
 				O.side = src.side
+				O.metal_cost = 20
+				O.glass_cost = 20
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.project = /obj/structure/divine/shrine
 				O.postbuild()
 	return
 
