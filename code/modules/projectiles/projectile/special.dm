@@ -187,3 +187,14 @@ obj/item/projectile/kinetic/New()
 /obj/item/effect/kinetic_blast/New()
 	spawn(4)
 		qdel(src)
+
+/obj/item/projectile/pylon_bolt
+	name = "pylon bolt"
+	icon_state = "pulse0_bl"
+	damage = 40
+	damage_type = BRUTE
+	pass_flags = PASSTABLE | PASSGLASS | PASSGRILLE
+	flag = "magic"
+	trace_residue = "Considerable ablation and charring."
+	hitsound = 'sound/weapons/sear.ogg'
+	var/range = 15

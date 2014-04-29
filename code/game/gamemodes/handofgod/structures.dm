@@ -147,7 +147,7 @@
 		else //Or maybe something went wrong.
 			user << "Something went wrong when the altar was made, and is unaligned.  You should adminhelp this."
 
-/obj/structure/divine/sacrificealtar
+/obj/structure/divine/sacrificealtar //made by based sawu.
 	name = "Sacrifical Altar"
 	desc = "An altar designed to perform blood sacrifice for a deity.  The cultists performing the sacrifice will gain a powerful material to use in their forge.  Sacrificing a prophet will yield even better results."
 	icon_state = "sacrificealtar"
@@ -214,7 +214,8 @@
 /obj/structure/divine/powerpylon/predelete()
 	deity.god_nexus.powerpylons.Remove(src)
 	..()
-/obj/structure/divine/defensepylon
+
+/obj/structure/divine/defensepylon //pretty much entirely made by based wb.
 	name = "Defense Pylon"
 	desc = "A plyon which is blessed to withstand many blows, and fire strong bolts at nonbelivers."
 	icon_state = "defensepylon"
@@ -222,6 +223,250 @@
 	maxhealth = 150
 	density = 1
 
+	var/targeting_delay = 20
+	var/shot_delay = 20 //2 seconds between shots
+	var/mob/living/current_target = null //what the pylon is shooting right now.
+	var/scan_range = 7 //used for target validation.
+/obj/structure/divine/defensepylon/New()
+	spawn() src.targeting_ticker_loop() //Any proc with sleeps should be set off with spawn() -wb
+	return
+/obj/structure/divine/defensepylon/proc/targeting_ticker_loop()
+	while(!src.gc_destroyed)
+		if(src.standard_target_scan() \
+		|| src.hidden_target_scan() \
+		|| src.mecha_scan())
+			return
+//		world << "Didn't find a target."
+		sleep(src.targeting_delay)
+	return
+
+/obj/structure/divine/defensepylon/proc/standard_target_scan()
+	for(var/mob/M in (oviewers(src.scan_range,src)))
+		if(!src.validate_target(M)) continue
+		spawn() src.engage_target(M)
+		return 1
+	return
+
+/obj/structure/divine/defensepylon/proc/hidden_target_scan()
+	for(var/mob/M in player_list)
+		if(!src.validate_target(M))
+			continue
+		if(!((get_turf(M)) in (oview(scan_range,src))))
+			continue
+		src.engage_target(M)
+		return 1
+	return
+
+/obj/structure/divine/defensepylon/proc/mecha_scan()
+	for(var/obj/mecha/M in mechas_list)
+		if(!M.occupant)
+			continue
+		if(!src.validate_target(M.occupant))
+			continue
+		if(!((get_turf(M)) in (oview(scan_range,src))))
+			continue
+		src.engage_target(M.occupant)
+		return 1
+	return
+
+/obj/structure/divine/defensepylon/proc/engage_target(mob/M)
+	src.current_target = M
+//	world << "Found a valid target ([M]). Engaging."
+	src.shoot_target(M)
+	return
+
+/obj/structure/divine/defensepylon/proc/validate_target(mob/living/target)
+	if(target.stat)
+//		world << "[target.name]'s stat was [target.stat] so it was invalid."
+		return 0
+	if(src.side == "red" && isredfollower(target))
+//		world << "[target.name] was on red and so am I. Invalid."
+		return 0
+	if(src.side == "blue" && isbluefollower(target))
+//		world << "[target.name] was on blue, and so am I. Invalid."
+		return 0
+//	world << "validate_target() passed."
+	return 1
+
+/obj/structure/divine/defensepylon/proc/check_current_target()
+	if((src.current_target) \
+	&& (!src.current_target.stat) \
+	&& ((get_turf(src.current_target)) in (oview(scan_range,src)))) \
+		return 1
+	return
+
+/obj/structure/divine/defensepylon/proc/shoot_target()
+	while(!src.gc_destroyed)
+		if(!src.check_current_target())
+//			world << "target became invalid"
+			break
+//		world << "I shoot at [src.current_target.name]."
+		src.icon_state = "defensepylonattack"
+		src.postbuild()
+		playsound(src, 'sound/weapons/pulse3.ogg', 50, 1)
+		src.shoot_projectile()
+		sleep(shot_delay)
+//	world << "lost valid target"
+	src.icon_state = "defensepylon"
+	src.postbuild()
+	src.current_target = null
+	src.targeting_ticker_loop()
+	return
+
+/obj/structure/divine/defensepylon/proc/shoot_projectile()
+//	world << "firing projectile"
+	var/turf/curloc = get_turf(src)//more copypasta
+	var/turf/targloc = get_turf(current_target)
+	var/obj/item/projectile/A = new /obj/item/projectile/pylon_bolt(curloc)
+	if(src.side == "blue")
+		A.icon_state = "pulse1_bl"
+	A.current = curloc
+	A.yo = targloc.y - curloc.y
+	A.xo = targloc.x - curloc.x
+	spawn(0)
+		A.process()
+	return
+
+/*
+FUCK THIS CODE DOWN HERE
+/obj/structure/divine/defensepylon/New(loc)
+	var/obj/effect/step_trigger/pylon_target/A = new(loc)
+	my_fake_area = A
+	A.my_pylon = src
+	A.x -= 7
+	A.y -= 7
+	..()
+
+/obj/structure/divine/defensepylon/proc/engage() //only fires when a mob enters the fake area.  ends when target list is empty.
+	do
+		engaging = 1
+		fire()
+//		world << "I'm going to robust [current_target.name]."
+		sleep(shot_delay)
+	while(potential_targets.len > 0) //stop running if the list is empty
+	current_target = null
+	engaging = 0
+
+/obj/structure/divine/defensepylon/proc/get_target()
+	if(!potential_targets || potential_targets.len == 0) //runtime prevention
+		return
+	current_target = pick(oviewers()) //this runtimes
+
+/*	for(var/i in oviewers)
+		if (istype(i,mob)) newlist+=i
+	var/rng = pick(newlist)
+	current_target = rng
+*/
+//	for(mobs in oviewers)
+
+
+/*	var/rng = null
+	var/possible_targets = potential_targets
+	rng = pick(possible_targets)
+	if(!(rng in view(src.loc)))
+		rng -= possible_targets
+	current_target = rng
+*/
+/obj/structure/divine/defensepylon/proc/fire()
+	if(validate(current_target))
+//		world << "[current_target] is a valid kill." //debug
+		src.dir = get_dir(src,current_target) //point at our target
+		if(!src) //more sanity
+			return
+		var/turf/curloc = get_turf(src)//more copypasta
+		var/turf/targloc = get_turf(current_target)
+		if(!targloc || !curloc)
+			return
+		if(targloc == curloc)
+			return
+		playsound(src, 'sound/weapons/pulse3.ogg', 50, 1)
+		var/obj/item/projectile/A = new /obj/item/projectile/pylon_bolt(curloc)
+		if(src.side == "blue")
+			A.icon_state = "pulse1_bl"
+		A.current = curloc
+		A.yo = targloc.y - curloc.y
+		A.xo = targloc.x - curloc.x
+		spawn(0)
+			A.process()
+		return
+	else
+		current_target = null
+		get_target()
+
+/obj/structure/divine/defensepylon/proc/validate(atom/target) //taken from gun turret code
+	if(get_dist(target, src)>scan_range)
+		potential_targets -= current_target
+		return 0 //too far, not valid, get them out of the list
+	if(!(target in view(src.loc))) //can we see them?
+		world << "I CAN'T SEE SHIT!"
+		return 0
+	if(istype(target, /mob))
+		var/mob/M = target
+		if(!M.stat)
+			return 1 //mobs are valid
+	else if(istype(target, /obj/mecha))
+		var/obj/mecha/M = target
+		if(M.occupant)
+			return 1 //mechs with a person inside are valid.
+	else
+//		potential_targets -= current_target
+		return 0
+
+/obj/effect/step_trigger/pylon_target //creates a pseudo-area for a pylon to use to determine a target.
+	affect_ghosts = 0
+	invisibility = 0 //debug
+	icon = 'icons/turf/areas.dmi' //debug
+	icon_state = "red"
+	bounds = "480,480" //15x15 tiles
+	var/obj/structure/divine/defensepylon/my_pylon = null //to make sure different pylons don't share the same targeting area.
+
+	Crossed(var/atom/A)
+		..()
+		if(!A) //sanity
+			return
+		if(istype(A, /mob/dead/observer)) //ghosts don't trigger it.
+			return
+//		world << "Something crossed me!"
+		if(!my_pylon) //sanity
+//			world << "I don't have a pylon."
+			return
+		if(istype(A, /mob/living)) //don't add non-mobs to the pylon's list
+			if(my_pylon.side == "red")
+				if(!isredfollower(A)) //do not add red followers to a red pylon's target list
+//					world << "I've added [A.name] to my pylon's list of targets."
+					my_pylon.potential_targets |= A
+					if(my_pylon.engaging == 0) //don't engage if already engaging.
+						my_pylon.engage()
+					return
+			else if(my_pylon.side == "blue")
+				if(!isbluefollower(A))
+//					world << "I've added [A.name] to my pylon's list of targets."
+					my_pylon.potential_targets |= A
+					if(my_pylon.engaging == 0)
+						my_pylon.engage()
+					return
+			else
+				world << "A pylon has no assigned side, which is a bug."
+				return
+
+	Uncrossed(var/atom/A)
+		..()
+		if(!A) //sanity
+			return
+		if(istype(A, /mob/dead/observer)) //ghosts don't trigger it.
+			return
+//		world << "Something moved out of me!"
+		if(!my_pylon) //sanity
+//			world << "I don't have a pylon."
+			return
+		if(istype(A, /mob/living)) //don't add non-mobs to the pylon's list
+//			world << "I've removed [A.name] to my pylon's list of targets."
+			my_pylon.potential_targets -= A
+			return
+
+	/obj/effect/step_trigger/pylon_target/Move() //prevent singulo from dragging it.
+		return 0
+*/
 /obj/structure/divine/shrine
 	name = "Shrine to " //todo: add name of god here.
 	desc = "A shrine dedicated to a deity."
@@ -232,10 +477,10 @@
 	..()
 	var/tempname = name
 	name = "[tempname][deity.name]"
-	deity.max_god_points += 50
+//	deity.max_god_points += 50 //goofball pls don't add stuff w/o asking me -neerti
 
 /obj/structure/divine/shrine/predelete()
-	deity.max_god_points -= 50
+//	deity.max_god_points -= 50
 	..()
 
 /obj/structure/divine/ward
@@ -246,7 +491,7 @@
 	maxhealth = 80
 	density = 1
 
-	var/timeleft = 600
+	var/timeleft = 3000
 	var/last_process = 0
 
 /obj/structure/divine/ward/New()

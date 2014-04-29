@@ -95,7 +95,7 @@
 		src << "You smite [H] with your godly powers!"
 		H.adjustFireLoss(10)
 		H.adjustBruteLoss(10)
-		H << "You feel a sense of horrifying agony as you are smited by an unseen force!"
+		H << "<span class='danger'><b>You feel a sense of horrifying agony as you are harmed by an unseen force!</b></span>"
 	src.add_points(-40)
 
 /mob/camera/god/verb/holyword()

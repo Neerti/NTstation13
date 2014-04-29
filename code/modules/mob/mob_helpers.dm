@@ -187,6 +187,18 @@ proc/isbluefollower(A)
 			return 0
 	return 0
 
+/mob/proc/get_follower_side()
+	if(!src.mind)
+		return 0
+	if(src.mind in ticker.mode.red_followers)
+		return "red"
+	if(src.mind in ticker.mode.blue_followers)
+		return "blue"
+	if(src.mind in ticker.mode.blue_prophets)
+		return "blue"
+	if(src.mind in ticker.mode.red_prophets)
+		return "red"
+	return
 
 proc/isorgan(A)
 	if(istype(A, /obj/item/organ/limb))
