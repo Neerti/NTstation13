@@ -105,22 +105,22 @@
 		return 1
 	return 0
 
-proc/isobserver(A)
+/proc/isobserver(A)
 	if(istype(A, /mob/dead/observer))
 		return 1
 	return 0
 
-proc/isovermind(A)
+/proc/isovermind(A)
 	if(istype(A, /mob/camera/blob))
 		return 1
 	return 0
 
-proc/isgod(A)
+/proc/isgod(A)
 	if(istype(A, /mob/camera/god))
 		return 1
 	return 0
 
-proc/isyourprophet(A, D)
+/proc/isyourprophet(A, D)
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.prophet && H.deity == D)
@@ -139,7 +139,7 @@ proc/isprophet(A)
 	return 0
 */
 
-proc/isprophet(A) //todo: add a 'was prophet' var to humans so deities can't cheese the other team out of a sacrifice by making a new prophet asap
+/proc/isprophet(A) //todo: add a 'was prophet' var to humans so deities can't cheese the other team out of a sacrifice by making a new prophet asap
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.mind in ticker.mode.red_prophets)
@@ -150,7 +150,7 @@ proc/isprophet(A) //todo: add a 'was prophet' var to humans so deities can't che
 			return 0
 	return 0
 
-proc/isfollower(A)
+/proc/isfollower(A)
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.mind in ticker.mode.red_followers)
@@ -165,7 +165,7 @@ proc/isfollower(A)
 			return 0
 	return 0
 
-proc/isredfollower(A) //also prophet
+/proc/isredfollower(A) //also prophet
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.mind in ticker.mode.red_followers)
@@ -176,7 +176,7 @@ proc/isredfollower(A) //also prophet
 			return 0
 	return 0
 
-proc/isbluefollower(A)
+/proc/isbluefollower(A)
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.mind in ticker.mode.blue_followers)
@@ -200,7 +200,7 @@ proc/isbluefollower(A)
 		return "red"
 	return
 
-proc/isorgan(A)
+/proc/isorgan(A)
 	if(istype(A, /obj/item/organ/limb))
 		return 1
 	return 0
@@ -319,7 +319,7 @@ proc/isorgan(A)
 	return message
 
 
-proc/Gibberish(t, p)//t is the inputted message, and any value higher than 70 for p will cause letters to be replaced instead of added
+/proc/Gibberish(t, p)//t is the inputted message, and any value higher than 70 for p will cause letters to be replaced instead of added
 	/* Turn text into complete gibberish! */
 	var/returntext = ""
 	for(var/i = 1, i <= length(t), i++)
@@ -444,14 +444,14 @@ It's fairly easy to fix if dealing with single letters but not so much with comp
 			else
 				hud_used.action_intent.icon_state = "help"
 
-proc/is_blind(A)
+/proc/is_blind(A)
 	if(istype(A, /mob/living/carbon))
 		var/mob/living/carbon/C = A
 		if(C.blinded != null)
 			return 1
 	return 0
 
-proc/is_special_character(mob/M) // returns 1 for special characters and 2 for heroes of gamemode //moved out of admins.dm because things other than admin procs were calling this.
+/proc/is_special_character(mob/M) // returns 1 for special characters and 2 for heroes of gamemode //moved out of admins.dm because things other than admin procs were calling this.
 	if(!ticker || !ticker.mode)
 		return 0
 	if(!istype(M))

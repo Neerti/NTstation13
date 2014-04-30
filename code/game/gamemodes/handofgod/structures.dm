@@ -57,6 +57,8 @@
 		new /obj/item/stack/sheet/greatergem(src.loc)
 	else if(isAI(M)) //Good luck
 		new /obj/item/stack/sheet/greatergem(src.loc)
+	else if(istype(M, /mob/living/carbon/alien/humanoid/queen))
+		new /obj/item/stack/sheet/greatergem(src.loc)
 	else //everything else gets a lesser gem
 		new /obj/item/stack/sheet/lessergem(src.loc)
 	M.gib()
@@ -111,15 +113,26 @@
 	maxhealth = 150
 	density = 1
 
-/obj/structure/divine/forge
+/obj/structure/divine/forge //uses Razharas's crafting system which can be found in code/datums/crafting.dm
 	name = "Forge"
 	desc = "A forge fueled by divine might, it allows the creation of sacred and powerful artifacts.  It requires common materials to craft objects."
 	icon_state = "forge"
 	health = 250
 	maxhealth = 250
-	density = 1
+	density = 0
 
-/obj/structure/divine/convertaltar //todo: make desc reflect the god's name.
+/obj/structure/divine/forge/New()
+
+	craft_holder = new /datum/crafting_holder(src, "forge")
+
+
+/obj/structure/divine/forge/attack_hand()
+	if(isfollower(usr))
+		craft_holder.interact(usr)
+	else
+		usr << "<span class='notice'>You can't seem to do anything useful with this.</span>"
+
+/obj/structure/divine/convertaltar //Made by based sawu.
 	name = "Conversion Altar"
 	desc = "An altar dedicated to a deity.  Cultists can \"forcefully teach\" their non-aligned crewmembers to join their side and take up their deity."
 	icon_state = "convertaltar"
@@ -147,7 +160,7 @@
 		else //Or maybe something went wrong.
 			user << "Something went wrong when the altar was made, and is unaligned.  You should adminhelp this."
 
-/obj/structure/divine/sacrificealtar //made by based sawu.
+/obj/structure/divine/sacrificealtar
 	name = "Sacrifical Altar"
 	desc = "An altar designed to perform blood sacrifice for a deity.  The cultists performing the sacrifice will gain a powerful material to use in their forge.  Sacrificing a prophet will yield even better results."
 	icon_state = "sacrificealtar"
@@ -186,15 +199,15 @@
 			user << "Something went wrong when the altar was made, and is unaligned.  You should adminhelp this."
 
 /obj/structure/divine/puddle
-	name = "Puddle of Healing"
-	desc = "Cultists standing close to this blessed puddle will be healed."
+	name = "Healing Pool"
+	desc = "It's a small puddle that's somehow deep."
 	icon_state = "puddle"
 	health = 50
 	maxhealth = 50
 
 /obj/structure/divine/gate
 	name = "Gateway"
-	desc = "A portal kept stable, it allows cultists to move to any other gateway they control."
+	desc = "A portal kept stable, it allows someone to go to any other gate of the same alignment."
 	icon_state = "gate"
 	health = 50
 	maxhealth = 50
