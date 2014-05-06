@@ -113,12 +113,75 @@ var/global/datum/crafting_controller/crafting_master
 
 //Forge Recipes//
 
-/datum/crafting_recipe/forge/claymore
+//low-tier
+/datum/crafting_recipe/forge/navigator
+	name = "Navigator's Compass"
+	result_path = /obj/item/weapon/navigator
+	reqs = list(/obj/item/stack/sheet/metal = 5,
+				/obj/item/stack/sheet/metal = 5)
+	time = 30
+
+/datum/crafting_recipe/forge/blessedarmor
+	name = "Blessed Armor Vest"
+	result_path = /obj/item/clothing/suit/armor/vest/blessed
+	reqs = list(/obj/item/clothing/suit/armor/vest)
+
+/datum/crafting_recipe/forge/robe
+	name = "Robe"
+	result_path = /obj/item/clothing/suit/robe
+	reqs = list(/obj/item/weapon/bedsheet = 1,)
+	time = 30
+
+/datum/crafting_recipe/forge/robe/armored
+	name = "Armored Robe"
+	result_path = /obj/item/clothing/suit/robe/armored
+	reqs = list(/obj/item/clothing/suit/robe = 1,
+				/obj/item/clothing/suit/armor/vest)
+	time = 50
+/*
+/datum/crafting_recipe/forge/claymore //this is dumb
 	name = "Claymore"
 	result_path = /obj/item/weapon/claymore
 	reqs = list(/obj/item/stack/sheet/metal = 10)
 	time = 50
+*/
+/datum/crafting_recipe/forge/holywater //where does the water come from?  It's magic!
+	name = "Holy Water"
+	result_path = /obj/item/weapon/reagent_containers/food/drinks/bottle/holywater
+	reqs = list(/obj/item/stack/sheet/glass = 20)
+	time = 50
 
+/datum/crafting_recipe/forge/banner
+	name = "Banner"
+	result_path = /obj/item/weapon/banner
+	reqs = list(/obj/item/stack/rods = 1,
+				/obj/item/weapon/bedsheet = 1)
+	time = 30
+
+/datum/crafting_recipe/forge/banner/red
+	name = "Red Banner"
+	result_path = /obj/item/weapon/banner/red
+
+/datum/crafting_recipe/forge/banner/blue
+	name = "Blue Banner"
+	result_path = /obj/item/weapon/banner/red
+
+
+
+//med-tier - requires a lesser gem
+/datum/crafting_recipe/forge/waterwalker
+	name = "Waterwalkers' Boots"
+	result_path = /obj/item/clothing/shoes/syndigaloshes/waterwalker
+	reqs = list(/obj/item/stack/sheet/metal = 15,
+				/obj/item/stack/sheet/lessergem = 1)
+	time = 80
+
+//top-tier - requires a greater gem
+/datum/crafting_recipe/forge/crusaderset
+	name = "Crusader's Armor Set"
+	result_path = /obj/item/weapon/storage/box/itemset/crusader
+	reqs = list(/obj/item/stack/sheet/plasteel = 20,
+				/obj/item/stack/sheet/greatergem = 1)
 
 /////////////////////////////////////////////////////////
 

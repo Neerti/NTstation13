@@ -226,8 +226,8 @@
 	set desc = "Create the foundation of a divine object."
 
 	if(powerc(75,1))
-		var/choice = input("Choose what you wish to create.","Divine structure") as null|anything in list("ward","conduit","forge","convert alter",
-																											"sacrifice alter","holy puddle","gate",
+		var/choice = input("Choose what you wish to create.","Divine structure") as null|anything in list("ward","conduit","forge","convert altar",
+																											"sacrifice altar","holy puddle","gate",
 																											"power pylon","defense pylon","shrine")
 		if(!choice || !powerc(75))	return
 		src << "You create an unfinished [choice]."
