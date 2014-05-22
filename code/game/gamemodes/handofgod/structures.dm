@@ -64,7 +64,6 @@
 	M.gib()
 	return
 
-
 //////////////
 //Structures//
 //////////////
@@ -496,6 +495,121 @@ FUCK THIS CODE DOWN HERE
 //	deity.max_god_points -= 50
 	..()
 
+//**Tier 2 structures**
+//Requires a greater gem to build.
+
+/obj/structure/divine/translocator
+	name = "Nexus Translocator"
+	desc = "A powerful structure, made with a greater gem.  It allows a deity to move their nexus to where this stands.  It may only move once, however."
+	icon_state = "translocator"
+	health = 100
+	maxhealth = 100
+	density = 1
+
+/obj/structure/divine/lazarus_altar
+	name = "Lazarus Altar"
+	desc = "A very powerful altar capable of bringing life back to the recently deceased, made with a greater gem.  It can revive anyone and will heal virtually all wounds, but they will not come back at full strength."
+	icon_state = "lazarus altar"
+	health = 100
+	maxhealth = 100
+	density = 0
+
+//**Traps**
+
+/obj/structure/divine/trap
+	name = "IT'S A TARP"
+	desc = "You shouldn't be reading this."
+	density = 1
+	alpha = 10
+	health = 20
+	maxhealth = 20
+	var/triggered = 0
+	var/timeleft = 0
+	var/last_process = 0
+
+/obj/structure/divine/trap/Crossed(AM as mob)
+	Bumped(AM)
+
+/obj/structure/divine/trap/Bumped(mob/M as mob)
+
+	if(triggered) return
+
+	if(istype(M, /mob/living/carbon/human) || istype(M, /mob/living/carbon/monkey))
+		for(var/mob/O in viewers(world.view, src.loc))
+			O << "<span class='danger'>[M] triggered the [src]</span>"
+		triggered = 1
+
+/obj/structure/divine/trap/examine()
+	..()
+	if(isliving(usr))
+		usr << "Trap detected and is now visible."
+		alpha = 200
+		timeleft = 2000 //about a minute
+		last_process = world.time
+		processing_objects.Add(src)
+	else
+		return
+
+/obj/structure/divine/trap/process()
+	timeleft -= (world.time - last_process)
+	if(timeleft <= 0)
+		processing_objects.Remove(src)
+		src.alpha = 10
+
+/obj/structure/divine/trap/stun
+	name = "shock trap"
+	desc = "A trap that will shock you, making you unable to move and being really painful.  You'd better avoid it."
+
+/obj/structure/divine/trap/stun/Bumped(mob/living/M as mob)
+	..()
+	if(ismob(M)) //to prevent runtimes
+		M << "<span class='danger'><b>You are paralyzed from the intense shock!</b></span>"
+		M.Weaken(5)
+		new /obj/effect/effect/sparks/electricity(M.loc)
+		new /obj/effect/effect/sparks(src.loc)
+		qdel(src)
+
+/obj/structure/divine/trap/fire
+	name = "flame trap"
+	desc = "A trap that will light you on fire.  You'd better avoid it."
+
+/obj/structure/divine/trap/fire/Bumped(mob/living/M as mob)
+	..()
+	if(ismob(M)) //to prevent runtimes
+		M << "<span class='danger'><b>You burn!</b></span>"
+		M.Weaken(1)
+		new /obj/effect/hotspot(M.loc)
+		new /obj/effect/effect/sparks(src.loc)
+		qdel(src)
+
+/obj/structure/divine/trap/frost
+	name = "frost trap"
+	desc = "A trap that will chill you to the bone.  You'd better avoid it."
+
+/obj/structure/divine/trap/frost/Bumped(mob/living/M as mob)
+	..()
+	if(ismob(M)) //to prevent runtimes
+		M << "<span class='danger'><b>You feel really cold!</b></span>"
+		M.Weaken(1)
+		M.bodytemperature -= 200
+		new /obj/effect/effect/sparks(src.loc)
+		qdel(src)
+
+/obj/structure/divine/trap/earth
+	name = "earth trap"
+	desc = "A trap that will impale you with sharp rocks.  You'd better avoid it."
+
+/obj/structure/divine/trap/earth/Bumped(mob/living/M as mob)
+	..()
+	if(ismob(M)) //to prevent runtimes
+		M << "<span class='danger'><b>Sharp rocks impale you from below!</b></span>"
+		M.Weaken(1)
+		M.adjustBruteLoss(35)
+		new /obj/effect/effect/sparks(src.loc)
+		qdel(src)
+
+//**Temporary structures**
+
 /obj/structure/divine/ward
 	name = "Divine Ward"
 	desc = "It's a barrier that appeared seemingly from nowhere.  It looks like you could destroy it with enough effort, or just wait for it to go away."
@@ -518,6 +632,8 @@ FUCK THIS CODE DOWN HERE
 		processing_objects.Remove(src)
 		qdel(src)
 
+//**Other**
+
 /obj/structure/divine/holder //used for building the structures.
 	name = "I'm an error" //Name is replaced by the object being built.
 	desc = "My description is broken, report me to a coder." //ditto, also tells what is needed to finish.
@@ -529,14 +645,18 @@ FUCK THIS CODE DOWN HERE
 	var/project = null //What is being built.  Determines what to spawn after construction is finished.
 	var/metal_cost = null //How much metal is needed to build
 	var/glass_cost = null //ditto
+	var/greater_gem_cost = null
 	var/metal_complete = 0
 	var/glass_complete = 0
+	var/greater_gem_complete = 0
 
 /obj/structure/divine/holder/attackby(obj/item/stack/W, mob/user)
 	if(isnull(metal_cost))
 		metal_complete = 1
 	if(isnull(glass_cost))
 		glass_complete = 1
+	if(isnull(greater_gem_complete))
+		greater_gem_complete = 1
 	if(istype(W, /obj/item/stack/sheet/metal))
 		if(metal_complete == 1)
 			user << "You don't need to add anymore metal!"
@@ -559,7 +679,18 @@ FUCK THIS CODE DOWN HERE
 			pile.use(glass_cost)
 			user << "You use your glass sheets to construct the [name]."
 			src.glass_complete = 1
-	if(metal_complete && glass_complete == 1)
+	if(istype(W, /obj/item/stack/sheet/greatergem))
+		if(greater_gem_complete == 1)
+			user << "You don't need to add anymore greater gems!"
+			return
+		if(W.amount < greater_gem_cost)
+			user << "You need [greater_gem_cost] greater gem to complete this."
+		else
+			var/obj/item/stack/sheet/greatergem/pile = W
+			pile.use(greater_gem_cost)
+			user << "You use your greater gem to construct the [name]."
+			src.glass_complete = 1
+	if(metal_complete && glass_complete && greater_gem_complete == 1)
 		var/obj/structure/divine/S = new project(loc)
 		S.side = src.side
 		S.postbuild()
