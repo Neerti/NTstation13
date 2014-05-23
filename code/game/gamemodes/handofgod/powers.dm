@@ -85,14 +85,36 @@
 /mob/camera/god/verb/smite()
 	set category = "God Powers"
 	set name = "Smite (40)"
-	set desc = "Hits anything under you with a large amount of damage."
+	set desc = "Hits anything under you with a moderate amount of damage."
 
 	if(!powerc(40))
 		src << "You don't have enough power to do that."
 		return
 	for(var/mob/living/carbon/human/M in src.loc)
 		var/mob/living/carbon/human/H = M
-		src << "You smite [H] with your godly powers!"
+		switch(src.name)
+			if("Atheism" || "Fedora" || "Hipster")
+				src << "You tip your fedora at [H]."
+			if("Woody" || "Andy")
+				src << "You read your book to [H]."
+			if("Zeus")
+				src << "You strike [H] with a bolt of lightning!"
+			if("Linda" || "Master Controller" || "Byond")
+				src << "You lag [H], causing damage."
+			if("Lord Singuloth" || "Nar'sie")
+				src << "You consume a bit of [H]."
+			if("Chaos")
+				src << "You roll a one and make [H] get hurt.  Again."
+			if("O'telbra Volema" || "Badmin" || "Admin" || "Xom")
+				src << "You badmin [H], hurting them."
+			if("Cuban Pete")
+				src << "You make [H]'s insides explode... just a bit."
+			if("Honkmother")
+				src << "You HONK [H]!"
+			if("Ian")
+				src << "You nuzzle [H].  It hurts them!"
+			else
+				src << "You smite [H] with your godly powers!"
 		H.adjustFireLoss(10)
 		H.adjustBruteLoss(10)
 		H << "<span class='danger'><b>You feel a sense of horrifying agony as you are harmed by an unseen force!</b></span>"
@@ -228,7 +250,8 @@
 	if(powerc(75,1))
 		var/choice = input("Choose what you wish to create.","Divine structure") as null|anything in list("ward","conduit","forge","convert altar",
 																											"sacrifice altar","holy puddle","gate",
-																											"power pylon","defense pylon","shrine")
+																											"power pylon","defense pylon","shrine",
+																											"translocator <greater gem>","lazarus altar <greater gem>")
 		if(!choice || !powerc(75))	return
 		src << "You create an unfinished [choice]."
 		src.add_points(-75)
@@ -256,7 +279,7 @@
 				O.icon_state = "forge"
 				O.side = src.side
 				O.metal_cost = 40
-				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
 				O.project = /obj/structure/divine/forge
 				O.postbuild()
 			if("convert altar")
@@ -265,7 +288,7 @@
 				O.icon_state = "convertaltar"
 				O.side = src.side
 				O.metal_cost = 20
-				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
 				O.project = /obj/structure/divine/convertaltar
 				O.postbuild()
 			if("sacrifice altar")
@@ -274,7 +297,7 @@
 				O.icon_state = "sacrificealtar"
 				O.side = src.side
 				O.metal_cost = 30
-				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
 				O.project = /obj/structure/divine/sacrificealtar
 				O.postbuild()
 			if("holy puddle")
@@ -285,7 +308,7 @@
 				O.metal_cost = 15
 				O.glass_cost = 10
 				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
-				O.project = /obj/structure/divine/puddle
+				O.project = /obj/structure/divine/healingfountain
 				O.postbuild()
 			if("gate")
 				var/obj/structure/divine/holder/O = new(loc)
@@ -326,6 +349,27 @@
 				O.glass_cost = 20
 				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.glass_cost] glass sheets to complete."
 				O.project = /obj/structure/divine/shrine
+				O.postbuild()
+			if("translocator <greater gem>")
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "translocator"
+				O.icon_state = "translocator"
+				O.side = src.side
+				O.metal_cost = 20
+				O.glass_cost = 20
+				O.greater_gem_cost = 1
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, [O.glass_cost] glass sheets, and [O.greater_gem_cost] to complete."
+				O.project = /obj/structure/divine/translocator
+				O.postbuild()
+			if("lazarus altar <greater gem>")
+				var/obj/structure/divine/holder/O = new(loc)
+				O.name = "lazarus altar"
+				O.icon_state = "lazarusaltar"
+				O.side = src.side
+				O.metal_cost = 20
+				O.greater_gem_cost = 1
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.greater_gem_cost] to complete."
+				O.project = /obj/structure/divine/lazarusaltar
 				O.postbuild()
 	return
 

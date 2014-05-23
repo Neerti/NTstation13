@@ -197,12 +197,45 @@
 		else //Or maybe something went wrong.
 			user << "Something went wrong when the altar was made, and is unaligned.  You should adminhelp this."
 
-/obj/structure/divine/puddle
-	name = "Healing Pool"
-	desc = "It's a small puddle that's somehow deep."
-	icon_state = "puddle"
+/obj/structure/divine/healingfountain
+	name = "Healing Fountain"
+	desc = "It's a fountain with special water."
+	icon_state = "fountain"
 	health = 50
 	maxhealth = 50
+	density = 1
+
+	var/on_cooldown = 0
+	var/timeleft = 0
+	var/last_process = 0
+
+	attack_hand(mob/living/user as mob)
+		if(on_cooldown == 1)
+			user << "<span class='notice'>The fountain appears to be empty.</span>"
+			return
+		if(!isfollower(user))
+			user << "<span class='danger'><b>The water burns!</b></span>"
+			user.reagents.add_reagent("pacid", 20)
+			icon_state = "fountain-dry"
+			on_cooldown = 1
+			timeleft = 2000
+			processing_objects.Add(src)
+			last_process = world.time
+		else
+			user << "<span class='notice'>The water feels warm and soothing as you touch it.  The fountian immediately dries up shortly afterwards.</span>"
+			user.reagents.add_reagent("doctorsdelight", 20)
+			icon_state = "fountain-dry"
+			on_cooldown = 1
+			timeleft = 2000
+			processing_objects.Add(src)
+			last_process = world.time
+
+/obj/structure/divine/healingfountain/process()
+	timeleft -= (world.time - last_process)
+	if(timeleft <= 0)
+		src.on_cooldown = 0
+		icon_state = "fountain"
+		processing_objects.Remove(src)
 
 /obj/structure/divine/gate
 	name = "Gateway"
@@ -506,21 +539,53 @@ FUCK THIS CODE DOWN HERE
 	maxhealth = 100
 	density = 1
 
-/obj/structure/divine/lazarus_altar
+/obj/structure/divine/lazarusaltar
 	name = "Lazarus Altar"
 	desc = "A very powerful altar capable of bringing life back to the recently deceased, made with a greater gem.  It can revive anyone and will heal virtually all wounds, but they will not come back at full strength."
-	icon_state = "lazarus altar"
+	icon_state = "lazarusaltar"
 	health = 100
 	maxhealth = 100
 	density = 0
+
+	attack_hand(mob/living/user as mob)
+		var/mob/living/H = locate(/mob/living/) in loc
+		if(!isfollower(user))
+			user << "<span class='notice'>You can't seem to do anything useful with this.</span>"
+			return
+		if(!H) //If nothing is on top of the alter, do nothing
+			user << "<span class='danger'>Nobody is on the altar.</span>"
+			return
+		if(src.side == ("red")) //Is the altar red?
+			if(isredfollower(user))//Is a red follower using it?
+				user << "<span class='notice'>You attempt to raise [H.name].</span>"
+				H.revive()
+				H.adjustCloneLoss(50) //They're stick with half health to balance instant revival.
+				H.adjustStaminaLoss(100)
+				return
+			else
+				user << "<span class='danger'>You can only use your own team's altars!</span>"
+			return
+		else if(src.side == ("blue")) //Or blue?
+			if(isbluefollower(user))
+				user <<"<span class='notice'>You attempt to raise [H.name].</span>"
+				H.revive()
+				H.adjustCloneLoss(50)
+				H.adjustStaminaLoss(100)
+				return
+			else
+				user << "<span class='danger'>You can only use your own team's altars!</span>"
+			return
+		else //Or maybe something went wrong.
+			user << "Something went wrong when the altar was made, and is unaligned.  You should adminhelp this."
 
 //**Traps**
 
 /obj/structure/divine/trap
 	name = "IT'S A TARP"
 	desc = "You shouldn't be reading this."
+	icon_state = "trap"
 	density = 1
-	alpha = 10
+	alpha = 30
 	health = 20
 	maxhealth = 20
 	var/triggered = 0
@@ -541,7 +606,7 @@ FUCK THIS CODE DOWN HERE
 
 /obj/structure/divine/trap/examine()
 	..()
-	if(isliving(usr))
+	if(isliving(usr)) //prevent ghosts from revealing.
 		usr << "Trap detected and is now visible."
 		alpha = 200
 		timeleft = 2000 //about a minute
@@ -554,11 +619,12 @@ FUCK THIS CODE DOWN HERE
 	timeleft -= (world.time - last_process)
 	if(timeleft <= 0)
 		processing_objects.Remove(src)
-		src.alpha = 10
+		src.alpha = 30
 
 /obj/structure/divine/trap/stun
 	name = "shock trap"
 	desc = "A trap that will shock you, making you unable to move and being really painful.  You'd better avoid it."
+	icon_state = "trap-shock"
 
 /obj/structure/divine/trap/stun/Bumped(mob/living/M as mob)
 	..()
@@ -572,6 +638,7 @@ FUCK THIS CODE DOWN HERE
 /obj/structure/divine/trap/fire
 	name = "flame trap"
 	desc = "A trap that will light you on fire.  You'd better avoid it."
+	icon_state = "trap-fire"
 
 /obj/structure/divine/trap/fire/Bumped(mob/living/M as mob)
 	..()
@@ -582,22 +649,25 @@ FUCK THIS CODE DOWN HERE
 		new /obj/effect/effect/sparks(src.loc)
 		qdel(src)
 
-/obj/structure/divine/trap/frost
+/obj/structure/divine/trap/chill
 	name = "frost trap"
 	desc = "A trap that will chill you to the bone.  You'd better avoid it."
+	icon_state = "trap-frost"
 
 /obj/structure/divine/trap/frost/Bumped(mob/living/M as mob)
 	..()
 	if(ismob(M)) //to prevent runtimes
 		M << "<span class='danger'><b>You feel really cold!</b></span>"
 		M.Weaken(1)
-		M.bodytemperature -= 200
+		if(ishuman(M)) //so it doesn't runtime if a borg runs into it.
+			M.bodytemperature -= 300
 		new /obj/effect/effect/sparks(src.loc)
 		qdel(src)
 
-/obj/structure/divine/trap/earth
+/obj/structure/divine/trap/damage
 	name = "earth trap"
 	desc = "A trap that will impale you with sharp rocks.  You'd better avoid it."
+	icon_state = "trap-earth"
 
 /obj/structure/divine/trap/earth/Bumped(mob/living/M as mob)
 	..()
@@ -689,7 +759,7 @@ FUCK THIS CODE DOWN HERE
 			var/obj/item/stack/sheet/greatergem/pile = W
 			pile.use(greater_gem_cost)
 			user << "You use your greater gem to construct the [name]."
-			src.glass_complete = 1
+			src.greater_gem_complete = 1
 	if(metal_complete && glass_complete && greater_gem_complete == 1)
 		var/obj/structure/divine/S = new project(loc)
 		S.side = src.side
