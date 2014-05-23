@@ -104,4 +104,4 @@
 	return
 
 /mob/camera/god/Move(var/NewLoc, var/Dir = 0)
-		loc = NewLoc
+	loc = NewLoc

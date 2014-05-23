@@ -94,7 +94,7 @@
 	processing_objects.Add(src)
 
 /obj/structure/divine/nexus/process()
-	deity.add_points(point_regen_rate + powerpylons.len)
+	deity.add_points(point_regen_rate + (powerpylons.len / 5))//todo: add follower to equation
 	if(deity.yourprophet)
 		if(deity.yourprophet.stat == 2)
 			deity << "You feel a great deal of pain as you feel your prophet leave this world."
@@ -725,7 +725,7 @@ FUCK THIS CODE DOWN HERE
 		metal_complete = 1
 	if(isnull(glass_cost))
 		glass_complete = 1
-	if(isnull(greater_gem_complete))
+	if(isnull(greater_gem_cost))
 		greater_gem_complete = 1
 	if(istype(W, /obj/item/stack/sheet/metal))
 		if(metal_complete == 1)

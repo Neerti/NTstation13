@@ -8,7 +8,8 @@
 	else if(Y &&(istype(src.loc, /obj/structure))) //no stacking structures.
 		src << "<span class='danger'>There is another structure there.  Select an empty spot for your structure.</span>"
 		return 0
-	else	return 1
+	else
+		return 1
 
 /mob/camera/god/verb/returntonexus()
 	set category = "God Powers"
@@ -248,7 +249,7 @@
 	set desc = "Create the foundation of a divine object."
 
 	if(powerc(75,1))
-		var/choice = input("Choose what you wish to create.","Divine structure") as null|anything in list("ward","conduit","forge","convert altar",
+		var/choice = input("Choose what you wish to create.","Divine structure") as null|anything in list("conduit","forge","convert altar",
 																											"sacrifice altar","holy puddle","gate",
 																											"power pylon","defense pylon","shrine",
 																											"translocator <greater gem>","lazarus altar <greater gem>")
@@ -256,13 +257,8 @@
 		src << "You create an unfinished [choice]."
 		src.add_points(-75)
 		for(var/mob/O in viewers(src, null))
-			O.show_message(text("<font color='blue'><b>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</B></font>"), 1) //todo:span classes
+			O.show_message(text("<span class='notice'>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</span>"), 1) //todo:span classes
 		switch(choice)
-			if("ward") //todo: remove this and add it to onclick
-				var/obj/structure/divine/ward/O = new(loc)
-				O.deity = src
-				O.side = src.side
-				O.postbuild()
 			if("conduit")
 				var/obj/structure/divine/holder/O = new(loc)
 				O.name = "conduit"
@@ -370,6 +366,70 @@
 				O.greater_gem_cost = 1
 				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets, and [O.greater_gem_cost] to complete."
 				O.project = /obj/structure/divine/lazarusaltar
+				O.postbuild()
+	return
+
+/mob/camera/god/verb/build_trap()
+	set category = "God Powers"
+	set name = "Create Ward/Trap (20)"
+	set desc = "Creates a ward or a trap."
+
+	if(powerc(20,1))
+		var/choice = input("Choose what you wish to create.","Divine structure") as null|anything in list("ward","shock trap","flame trap","frost trap","earth trap")
+		if(!choice || !powerc(20))	return
+		src << "You create an unfinished [choice]."
+		src.add_points(-20)
+		switch(choice)
+			if("ward") //todo: remove this and add it to onclick
+				var/obj/structure/divine/ward/O = new(loc)
+				for(var/mob/V in viewers(src, null))
+					V.show_message(text("<span class='notice'>[src] creates a ward, able to prevent anything from passing it.</span>"), 1)
+				O.deity = src
+				O.side = src.side
+				O.postbuild()
+			if("shock trap")
+				var/obj/structure/divine/holder/O = new(loc)
+				for(var/mob/V in viewers(src, null))
+					V.show_message(text("<span class='notice'>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</span>"), 1)
+				O.name = "shock trap"
+				O.icon_state = "trap-shock"
+				O.side = src.side
+				O.metal_cost = 5
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
+				O.project = /obj/structure/divine/trap/stun
+				O.postbuild()
+			if("flame trap")
+				var/obj/structure/divine/holder/O = new(loc)
+				for(var/mob/V in viewers(src, null))
+					V.show_message(text("<span class='notice'>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</span>"), 1)
+				O.name = "flame trap"
+				O.icon_state = "trap-fire"
+				O.side = src.side
+				O.metal_cost = 5
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
+				O.project = /obj/structure/divine/trap/fire
+				O.postbuild()
+			if("frost trap")
+				var/obj/structure/divine/holder/O = new(loc)
+				for(var/mob/V in viewers(src, null))
+					V.show_message(text("<span class='notice'>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</span>"), 1)
+				O.name = "frost trap"
+				O.icon_state = "trap-frost"
+				O.side = src.side
+				O.metal_cost = 5
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
+				O.project = /obj/structure/divine/trap/chill
+				O.postbuild()
+			if("earth trap")
+				var/obj/structure/divine/holder/O = new(loc)
+				for(var/mob/V in viewers(src, null))
+					V.show_message(text("<span class='notice'>[src] creates a transparent, unfinished [choice].  It can be finished by adding materials.</span>"), 1)
+				O.name = "earth trap"
+				O.icon_state = "trap-earth"
+				O.side = src.side
+				O.metal_cost = 5
+				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
+				O.project = /obj/structure/divine/trap/damage
 				O.postbuild()
 	return
 
