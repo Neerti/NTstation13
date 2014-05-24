@@ -114,12 +114,12 @@ var/global/datum/crafting_controller/crafting_master
 //Forge Recipes//
 
 //low-tier
-/datum/crafting_recipe/forge/navigator
-	name = "Navigator's Compass"
-	result_path = /obj/item/weapon/navigator
-	reqs = list(/obj/item/stack/sheet/metal = 5,
-				/obj/item/stack/sheet/metal = 5)
-	time = 30
+///datum/crafting_recipe/forge/navigator
+//	name = "Navigator's Compass"
+//	result_path = /obj/item/weapon/navigator
+//	reqs = list(/obj/item/stack/sheet/metal = 5,
+//				/obj/item/stack/sheet/metal = 5)
+//	time = 30
 
 /datum/crafting_recipe/forge/blessedarmor
 	name = "Blessed Armor Vest"
