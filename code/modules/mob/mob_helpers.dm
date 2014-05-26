@@ -119,8 +119,8 @@
 	if(istype(A, /mob/camera/god))
 		return 1
 	return 0
-
-/proc/isyourprophet(A, D)
+/*
+/proc/isyourprophet(A, D) //this shit sucks
 	if(istype(A, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = A
 		if(H.prophet && H.deity == D)
@@ -128,6 +128,20 @@
 		else
 			return 0
 	return 0
+*/
+/proc/isyourprophet(A, D)
+	if(istype(A, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = A
+		var/mob/camera/god/G = D
+		if(G.side == "red" && H.mind in ticker.mode.red_prophets)
+			return 1
+		else if(G.side == "blue" && H.mind in ticker.mode.blue_prophets)
+			return 1
+		else
+			return 0
+	return 0
+
+
 /*
 proc/isprophet(A)
 	if(istype(A, /mob/living/carbon/human))

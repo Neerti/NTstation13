@@ -461,7 +461,7 @@
 	. = new_mob
 	qdel(src)
 
-/mob/proc/apotheosis()
+/mob/proc/apotheosis(var/side)
 
 	if(client)
 		src << sound(null, repeat = 0, wait = 0, volume = 85, channel = 1) // stop the jams for AIs
@@ -474,7 +474,12 @@
 		O.key = key
 
 	O.job = "Deity"
-
+	if(side == "red")
+		O.side = "red"
+		O.icon_state = "marker-r"
+	else if(side == "blue")
+		O.side = "blue"
+		O.icon_state = "marker-b"
 	O.rename_self("deity")
 	. = O
 	qdel(src)

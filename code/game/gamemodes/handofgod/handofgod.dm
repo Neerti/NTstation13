@@ -15,11 +15,11 @@
 /datum/game_mode/handofgod
 	name = "hand of god"
 	config_tag = "handofgod"
-	antag_flag = BE_CULTIST //deities are handled seperately
+	antag_flag = BE_FOLLOWER
 
-	required_players = 1 //6-8 followers total, everyone else is crew  if this says one it's for debugging, and if it's in final build then scream at neerti
-	required_enemies = 1 //three red, three blue
-	recommended_enemies = 1
+	required_players = 2 //This MUST be an even number.  This number counts all players involved, as in both teams combined.
+	required_enemies = 2 //three red, three blue
+	recommended_enemies = 2
 
 	uplink_welcome = "Divine Uplink Console:"
 	uplink_uses = 10
@@ -63,6 +63,22 @@
 
 //	var/team_cap = required_enemies / 2
 
+	do
+		var/chosen = pick(unassigned_followers)
+		unassigned_followers -= chosen
+		add_red_follower(chosen)
+		world << "[chosen] was made a red follower."
+	while(unassigned_followers.len > (required_enemies / 2))
+
+	do
+		var/chosen = pick(unassigned_followers)
+		unassigned_followers -= chosen
+		add_blue_follower(chosen)
+		world << "[chosen] was made a blue follower."
+	while(unassigned_followers.len > 0)
+	return 1
+
+/*
 	for(var/team_cap = 0, team_cap == 3, team_cap ++)
 		if(unassigned_followers.len == 3)
 			world << "Loop for unassigned length was broken for red." //debug
@@ -98,7 +114,7 @@
 
 //	unassigned_followers.Cut(,team_cap)
 //	world << "Unassigned followers were cut."
-
+*/
 //////////////
 //Post Setup//
 //////////////
@@ -106,6 +122,12 @@
 /datum/game_mode/handofgod/post_setup() //Icons don't work properly at roundstart, hacky but it works.
 	update_all_red_follower_icons()
 	update_all_blue_follower_icons()
+
+	var/datum/mind/chosen_red = pick(red_followers) //this makes one of the followers a god.
+	chosen_red.current.apotheosis("red")
+
+	var/datum/mind/chosen_blue = pick(blue_followers) //ditto
+	chosen_blue.current.apotheosis("blue")
 
 ///////////////
 //Greet procs//

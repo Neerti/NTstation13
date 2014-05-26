@@ -91,6 +91,9 @@
 	if(!powerc(40))
 		src << "You don't have enough power to do that."
 		return
+	if(!range(7,src.god_nexus))
+		src << "You're too far away from your nexus or a conduit."
+		return
 	for(var/mob/living/carbon/human/M in src.loc)
 		var/mob/living/carbon/human/H = M
 		switch(src.name)
@@ -104,7 +107,7 @@
 				src << "You lag [H], causing damage."
 			if("Lord Singuloth" || "Nar'sie")
 				src << "You consume a bit of [H]."
-			if("Chaos")
+			if("Chaos" || "RNG")
 				src << "You roll a one and make [H] get hurt.  Again."
 			if("O'telbra Volema" || "Badmin" || "Admin" || "Xom")
 				src << "You badmin [H], hurting them."

@@ -654,7 +654,7 @@ FUCK THIS CODE DOWN HERE
 	desc = "A trap that will chill you to the bone.  You'd better avoid it."
 	icon_state = "trap-frost"
 
-/obj/structure/divine/trap/frost/Bumped(mob/living/M as mob)
+/obj/structure/divine/trap/chill/Bumped(mob/living/M as mob)
 	..()
 	if(ismob(M)) //to prevent runtimes
 		M << "<span class='danger'><b>You feel really cold!</b></span>"
@@ -669,7 +669,7 @@ FUCK THIS CODE DOWN HERE
 	desc = "A trap that will impale you with sharp rocks.  You'd better avoid it."
 	icon_state = "trap-earth"
 
-/obj/structure/divine/trap/earth/Bumped(mob/living/M as mob)
+/obj/structure/divine/trap/damage/Bumped(mob/living/M as mob)
 	..()
 	if(ismob(M)) //to prevent runtimes
 		M << "<span class='danger'><b>Sharp rocks impale you from below!</b></span>"
