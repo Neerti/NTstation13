@@ -481,6 +481,7 @@
 		O.side = "blue"
 		O.icon_state = "marker-b"
 	O.rename_self("deity")
+//	ticker.mode.forge_deity_objectives(O)
 	. = O
 	qdel(src)
 	return

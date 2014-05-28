@@ -95,14 +95,16 @@
 
 /obj/structure/divine/nexus/process()
 	deity.add_points(point_regen_rate + (powerpylons.len / 5))//todo: add follower to equation
-	if(deity.yourprophet)
+/*	if(deity.yourprophet)
 		if(deity.yourprophet.stat == 2)
 			deity << "You feel a great deal of pain as you feel your prophet leave this world."
 			deity.yourprophet = null
 			deity.verbs += /mob/camera/god/verb/newprophet
 			deity << "You feel your Nexus has become weaker from your prophet's death."
 			maxhealth -= 50
+*/
 	checkhealth()
+	deity.update_followers()
 
 /obj/structure/divine/conduit
 	name = "Conduit"

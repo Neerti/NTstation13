@@ -58,6 +58,7 @@
 		unassigned_followers += follower
 //		log_game("[follower.key] (ckey) has been selected as a red follower")
 		world << "[follower.key] has been chosen to be a follower." //debug stuff
+		log_game("[follower.key] (ckey) has been selected as a follower.")
 		world << "recommended_enemies = [recommended_enemies]"
 //	return (unassigned_followers.len>=required_enemies)
 
@@ -125,9 +126,64 @@
 
 	var/datum/mind/chosen_red = pick(red_followers) //this makes one of the followers a god.
 	chosen_red.current.apotheosis("red")
+	ticker.mode.forge_deity_objectives(chosen_red)
+	remove_follower(chosen_red,0)
 
 	var/datum/mind/chosen_blue = pick(blue_followers) //ditto
 	chosen_blue.current.apotheosis("blue")
+	ticker.mode.forge_deity_objectives(chosen_blue)
+	remove_follower(chosen_blue,0)
+
+///////////////////
+//Objective Procs//
+///////////////////
+
+/datum/game_mode/proc/forge_deity_objectives(var/datum/mind/deity) //fresh hot copypasta
+	switch(rand(1,100))
+		if(1 to 30)
+
+			var/datum/objective/assassinate/kill_objective = new
+			kill_objective.owner = deity
+			kill_objective.find_target()
+			deity.objectives += kill_objective
+
+			if (!(locate(/datum/objective/escape) in deity.objectives))
+				var/datum/objective/escape/escape_objective = new
+				escape_objective.owner = deity
+				deity.objectives += escape_objective
+		if(31 to 60)
+			var/datum/objective/steal/steal_objective = new
+			steal_objective.owner = deity
+			steal_objective.find_target()
+			deity.objectives += steal_objective
+
+			if (!(locate(/datum/objective/escape) in deity.objectives))
+				var/datum/objective/escape/escape_objective = new
+				escape_objective.owner = deity
+				deity.objectives += escape_objective
+
+		if(61 to 85)
+			var/datum/objective/assassinate/kill_objective = new
+			kill_objective.owner = deity
+			kill_objective.find_target()
+			deity.objectives += kill_objective
+
+			var/datum/objective/steal/steal_objective = new
+			steal_objective.owner = deity
+			steal_objective.find_target()
+			deity.objectives += steal_objective
+
+			if (!(locate(/datum/objective/survive) in deity.objectives))
+				var/datum/objective/survive/survive_objective = new
+				survive_objective.owner = deity
+				deity.objectives += survive_objective
+
+		else
+			if (!(locate(/datum/objective/hijack) in deity.objectives))
+				var/datum/objective/hijack/hijack_objective = new
+				hijack_objective.owner = deity
+				deity.objectives += hijack_objective
+	return
 
 ///////////////
 //Greet procs//
@@ -194,19 +250,32 @@
 //Deconvert proc//
 //////////////////
 
-/datum/game_mode/proc/remove_follower(var/datum/mind/follower_mind) //this deconverts both sides
-	if(follower_mind in red_followers || blue_followers)
+/datum/game_mode/proc/remove_follower(var/datum/mind/follower_mind, var/announce = 1) //this deconverts both sides
+/*	if(follower_mind in red_followers || follower_mind in blue_followers)
 		red_followers -= follower_mind
 		blue_followers -= follower_mind
 		follower_mind.special_role = null
-		follower_mind.current.attack_log += "\[[time_stamp()]\] <font color='red'>Has been deconverted from a deity's cult!</font>"
-
-		follower_mind.current << "<span class='danger'><b>Your mind has been cleared from the brainwashing the followers have done to you.  Now you serve yourself and the crew.</b></span>"
-
+		if(announce == 0)
+			follower_mind.current.attack_log += "\[[time_stamp()]\] <font color='red'>Has been deconverted from a deity's cult!</font>"
+			follower_mind.current << "<span class='danger'><b>Your mind has been cleared from the brainwashing the followers have done to you.  Now you serve yourself and the crew.</b></span>"
+			for(var/mob/living/M in view(follower_mind.current))
+				M << "[follower_mind.current] looks like they just remembered their real allegiance!"
 		update_red_follower_icons_removed(follower_mind)
 		update_blue_follower_icons_removed(follower_mind)
-		for(var/mob/living/M in view(follower_mind.current))
-			M << "[follower_mind.current] looks like they just remembered their real allegiance!"
+*/
+	if(follower_mind in red_followers)
+		red_followers -= follower_mind
+		update_red_follower_icons_removed(follower_mind)
+	if(follower_mind in blue_followers)
+		blue_followers -= follower_mind
+		update_blue_follower_icons_removed(follower_mind)
+
+		if(announce == 1)
+			follower_mind.current.attack_log += "\[[time_stamp()]\] <font color='red'>Has been deconverted from a deity's cult!</font>"
+			follower_mind.current << "<span class='danger'><b>Your mind has been cleared from the brainwashing the followers have done to you.  Now you serve yourself and the crew.</b></span>"
+			for(var/mob/living/M in view(follower_mind.current))
+				M << "[follower_mind.current] looks like they just remembered their real allegiance!"
+
 
 ///////////////////////
 //Follower icon procs//

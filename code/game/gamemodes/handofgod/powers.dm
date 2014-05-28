@@ -21,6 +21,27 @@
 	else
 		src << "You don't have a Nexus yet. Build one first."
 
+/mob/camera/god/verb/jumptofollower()
+	set category = "God Powers"
+	set name = "Jump to Follower"
+	set desc = "Teleports you to one of your followers."
+	var/choice_red
+	var/choice_blue
+	if(src.side == "red")
+		choice_red = input("Choose a follower to jump to.","Follower Following") as null|anything in ticker.mode.red_followers
+	else if(src.side == "blue")
+		choice_red = input("Choose a follower to jump to.","Follower Following") as null|anything in ticker.mode.blue_followers
+	else
+		src << "You are unaligned, and cannot have any followers."
+		return
+	if(choice_red)
+		var/mob/living/carbon/human/H = choice_red
+		src.loc = H.loc
+	if(choice_blue)
+		var/mob/living/carbon/human/H = choice_blue
+		src.loc = H.loc
+
+
 /mob/camera/god/verb/newprophet()
 	set category = "God Powers"
 	set name = "Appoint Prophet (100)"
@@ -92,10 +113,12 @@
 		src << "You don't have enough power to do that."
 		return
 	if(!range(7,src.god_nexus))
-		src << "You're too far away from your nexus or a conduit."
+		src << "You're too far away from your nexus."
 		return
-	for(var/mob/living/carbon/human/M in src.loc)
-		var/mob/living/carbon/human/H = M
+	for(var/mob/living/M in src.loc)
+		var/mob/living/H = M
+		if(!H)
+			return
 		switch(src.name)
 			if("Atheism" || "Fedora" || "Hipster")
 				src << "You tip your fedora at [H]."
@@ -121,6 +144,7 @@
 				src << "You smite [H] with your godly powers!"
 		H.adjustFireLoss(10)
 		H.adjustBruteLoss(10)
+		H.Weaken(1)
 		H << "<span class='danger'><b>You feel a sense of horrifying agony as you are harmed by an unseen force!</b></span>"
 	src.add_points(-40)
 
@@ -158,11 +182,12 @@
 		H.reagents.add_reagent("blessedblood", 48) //lasts about two minutes.
 		H << "<span class='notice'>You feel warm for a moment, than you feel tough and stalward.</span>"
 	src.add_points(-20)
-
+/*
 /mob/camera/god/verb/cure()
 	set category = "God Powers"
 	set name = "Cure Disease (10)"
-
+*/
+/*
 /mob/camera/god/verb/testconvert() //todo: remove this before release
 	set category = "God Powers"
 	set name = "Testing Convert Mob"
@@ -177,7 +202,7 @@
 		src << "You convert [B]."
 		followers.Add(choice)
 		return
-
+*/
 /mob/camera/god/verb/disaster()
 	set category = "God Powers"
 	set name = "Invoke Disaster (300)" //requires 20+ converts.
@@ -239,6 +264,7 @@
 		var/obj/structure/divine/nexus/O = new(loc)
 		O.deity = src
 		O.side = src.side
+		O.postbuild()
 		src.god_nexus = O
 		src.nexus_required = 1
 		src.verbs -= /mob/camera/god/verb/buildnexus

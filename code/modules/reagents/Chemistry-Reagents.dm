@@ -271,6 +271,9 @@ datum
 					if (!M.confused) M.confused = 1
 					M.confused += 3
 					if(isfollower(M))
+						if(isprophet(M))
+							M << "<span class='danger'><b>The holy water tries to brainwash you, but you resist it!</b></span>"
+							return
 						ticker.mode.remove_follower(M.mind)
 						holder.remove_reagent(src.id, src.volume)	// maybe this is a little too perfect and a max() cap on the statuses would be better??
 						M.jitteriness = 0

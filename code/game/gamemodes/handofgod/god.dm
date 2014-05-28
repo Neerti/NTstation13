@@ -2,7 +2,7 @@
 	name = "deity" //Players will rename themselves when the game starts.
 	real_name = "deity"
 	icon = 'icons/mob/god.dmi'
-	icon_state = "marker" //Placeholder
+	icon_state = "marker"
 	see_invisible = SEE_INVISIBLE_MINIMUM
 	invisibility = INVISIBILITY_OBSERVER
 	see_in_dark = 0 //so you can hide in maint from omniscient beings
@@ -19,8 +19,12 @@
 
 	var/nexus_required = 0 //If they need the nexus to survive.  Defaults to zero so newly spawned gods don't instantly die.
 	var/followers_required = 0 //Same as above.
-	var/list/followers = list()
-	var/mob/living/carbon/human/yourprophet // Your prophet.
+	var/alive_red_followers = 0
+	var/alive_blue_followers = 0
+//	var/followers_red = ticker.mode.red_followers.len + ticker.mode.red_prophets.len //this counts all red prophets and followers and outputs a number.
+//	var/followers_blue = ticker.mode.blue_followers.len + ticker.mode.blue_prophets.len
+//	var/list/followers = list()
+//	var/mob/living/carbon/human/yourprophet // Your prophet.
 
 /mob/camera/god/New(loc) //Makes default name be picked from a text file, for the uncreative god.
 	var/list/possibleNames = deity_names
@@ -44,7 +48,12 @@
 	if (client.statpanel == "Status")
 		if(god_nexus)
 			stat(null, "Nexus Health: [god_nexus.health]")
-		stat(null, "Followers: [followers]")
+		if(src.side == "red")
+			stat(null, "Followers: [alive_red_followers]/[ticker.mode.red_followers.len]")
+		else if(src.side == "blue")
+			stat(null, "Followers: [alive_blue_followers]/[ticker.mode.blue_followers.len]")
+		else
+			stat(null, "Followers: Unaligned")
 		stat(null, "Faith Points: [god_points]/[max_god_points]")
 	return
 
@@ -69,7 +78,22 @@
 		god_points = Clamp(god_points + points, 0, max_god_points)
 		hud_used.deity_power_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='cyan'>[src.god_points]  </font></div>"
 
-//todo: follower hud
+/mob/camera/god/proc/update_followers() //counts all followers, counts all followers alive, for both teams, then updates the god's hud/status.
+	if(src.side == "red")
+		alive_red_followers = 0
+		var/list/all_red_followers = ticker.mode.red_followers + ticker.mode.red_prophets
+		for(var/datum/mind/red in all_red_followers)
+			if(red.current.stat != DEAD) alive_red_followers++
+		hud_used.deity_follower_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='red'>[alive_red_followers]     </font></div>"
+	else if(src.side == "blue")
+		alive_blue_followers = 0
+		var/list/all_blue_followers = ticker.mode.blue_followers + ticker.mode.blue_prophets
+		for(var/mob/living/mob in all_blue_followers)
+			if(mob.stat != DEAD) alive_blue_followers++
+		hud_used.deity_follower_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='red'>[alive_blue_followers]     </font></div>"
+	else
+		hud_used.deity_follower_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='red'>N/A      </font></div>"
+
 
 /mob/camera/god/say(var/message)
 	if (!message)

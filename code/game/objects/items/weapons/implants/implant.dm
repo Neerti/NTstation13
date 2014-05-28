@@ -140,15 +140,19 @@
 
 
 /obj/item/weapon/implant/loyalty/implanted(mob/M)
-	if(!ishuman(M))	return 0
+	if(!ishuman(M))
+		return 0
 	var/mob/living/carbon/human/H = M
 	if(H.mind in ticker.mode.head_revolutionaries)
 		H.visible_message("<span class='warning'>[H] seems to resist the implant!</span>", "<span class='warning'>You feel the corporate tendrils of Nanotrasen try to invade your mind!</span>")
 		return 0
 	else if(H.mind in ticker.mode:revolutionaries)
 		ticker.mode:remove_revolutionary(H.mind)
-	else if(H.mind in ticker.mode:red_followers || ticker.mode:blue_followers) //colon cancer why???
-		ticker.mode:remove_follower(H.mind)
+	if(isfollower(H)) //This had to be done this way or else it wouldn't work.
+		if(isprophet(H))
+			H.visible_message("<span class='warning'>[H] seems to resist the implant!</span>", "<span class='warning'>You feel the heresy try to subvert you.  You resist it!</span>")
+			return 0
+		ticker.mode.remove_follower(M.mind)
 	H << "<span class='notice'>You feel a surge of loyalty towards Nanotrasen.</span>"
 	return 1
 
