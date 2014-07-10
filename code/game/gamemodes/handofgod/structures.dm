@@ -55,6 +55,10 @@
 			new /obj/item/stack/sheet/lessergem(src.loc)
 	else if(isprophet(M)) //enemy prophets are very special
 		new /obj/item/stack/sheet/greatergem(src.loc)
+//		if(locate(/datum/objective/sacrifice_prophet) in deity.mind.objectives) //greentext
+		var/datum/objective/sacrifice_prophet/O = locate(/datum/objective/sacrifice_prophet)
+		O.done = 1
+		world << "Sac objective done."
 	else if(isAI(M)) //Good luck
 		new /obj/item/stack/sheet/greatergem(src.loc)
 	else if(istype(M, /mob/living/carbon/alien/humanoid/queen))
@@ -609,11 +613,12 @@ FUCK THIS CODE DOWN HERE
 /obj/structure/divine/trap/examine()
 	..()
 	if(isliving(usr)) //prevent ghosts from revealing.
-		usr << "Trap detected and is now visible."
-		alpha = 200
-		timeleft = 2000 //about a minute
-		last_process = world.time
-		processing_objects.Add(src)
+		if(usr.stat != 2)
+			usr << "Trap detected and is now visible."
+			alpha = 200
+			timeleft = 2000 //about a minute
+			last_process = world.time
+			processing_objects.Add(src)
 	else
 		return
 

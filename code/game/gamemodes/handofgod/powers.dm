@@ -426,7 +426,6 @@
 				O.metal_cost = 5
 				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
 				O.project = /obj/structure/divine/trap/stun
-				O.postbuild()
 			if("flame trap")
 				var/obj/structure/divine/holder/O = new(loc)
 				for(var/mob/V in viewers(src, null))
@@ -437,7 +436,6 @@
 				O.metal_cost = 5
 				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
 				O.project = /obj/structure/divine/trap/fire
-				O.postbuild()
 			if("frost trap")
 				var/obj/structure/divine/holder/O = new(loc)
 				for(var/mob/V in viewers(src, null))
@@ -448,7 +446,6 @@
 				O.metal_cost = 5
 				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
 				O.project = /obj/structure/divine/trap/chill
-				O.postbuild()
 			if("earth trap")
 				var/obj/structure/divine/holder/O = new(loc)
 				for(var/mob/V in viewers(src, null))
@@ -459,7 +456,6 @@
 				O.metal_cost = 5
 				O.desc = "It's an unfinsihed [O.name].  It needs [O.metal_cost] metal sheets to complete."
 				O.project = /obj/structure/divine/trap/damage
-				O.postbuild()
 	return
 
 /mob/camera/god/verb/god_chat(msg as text)

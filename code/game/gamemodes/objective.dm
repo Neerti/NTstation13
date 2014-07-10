@@ -419,35 +419,132 @@ datum/objective/absorb/check_completion()
 
 //hand of god objectives below
 
-//these need to be finished later.
-datum/objective/build
+/datum/objective/build
 	dangerrating = 15
 
-datum/objective/build/proc/gen_amount_goal(var/lowbound = 8, var/highbound = 16)
+/datum/objective/build/proc/gen_amount_goal(var/lowbound = 8, var/highbound = 16)
 	target_amount = rand (lowbound,highbound)
 	explanation_text = "Build [target_amount] shrines."
 	return target_amount
 
-datum/objective/build/check_completion()
+/datum/objective/build/check_completion()
 	if(!isgod(owner.current))
 		return 0
 
-datum/objective/deicide //might just reuse assassinate objective
-	explanation_text = "Phase, the false god out of existance."
+/datum/objective/deicide
 	dangerrating = 20
 
-datum/objective/follower_block
+/datum/objective/deicide/check_completion()
+	if(!target) //deicide died or free objective
+		return 1
+	else
+		return 0
+
+/*
+/datum/objective/deicide/find_target()
+	if(istype(owner.current, /mob/camera/god))
+		var/mob/camera/god/G = owner.current
+		if(G.side == "red")
+			T = ticker.mode.blue_gods[1]
+		if(G.side == "blue")
+			T = ticker.mode.red_gods[1]
+
+/datum/objective/deicide/update_explanation_text()
+	..()
+	if(target && target.current)
+		explanation_text = "Phase [T.real_name], the false god out of existance.."
+	else
+		explanation_text = "Free Objective"
+*/
+/*
+/datum/objective/deicide/find_target()
+	for(var/mob/camera/god/T in mob_list)
+*/
+/*
+/datum/objective/deicide/check_completion()
+	if(!T)
+		return 1
+	else
+		return 0
+*/
+/*	var/gods = ticker.mode.red_gods + ticker.mode.blue_gods
+	if(gods == 1)
+		return 1
+	else
+		return 2
+*/
+
+/datum/objective/follower_block
 	explanation_text = "Only allow your followers and prophet to escape on the station's shuttle alive."
 	dangerrating = 25
 
-datum/objective/get_followers
+/datum/objective/follower_block/check_completion()
+	if(istype(owner.current, /mob/camera/god))
+		var/mob/camera/god/G = owner.current
+		if(emergency_shuttle.location<2)
+			return 0
+		var/area/shuttle = locate(/area/shuttle/escape/centcom)
+		var/protected_mobs[] = list(/mob/living/silicon/ai, /mob/living/silicon/pai, /mob/living/silicon/robot, /mob/living/simple_animal)
+		if(G.side == "red")
+			for(var/mob/living/player in player_list)
+				if(player.type in protected_mobs)	continue
+				if (player.mind)
+					if (player.stat != 2) //not dead
+						if (get_turf(player) in shuttle) //on the shuttle
+							if(!isredfollower(player)) //if anyone is not a red follower, failure
+								return 0
+		if(G.side == "blue")
+			for(var/mob/living/player in player_list)
+				if(player.type in protected_mobs)	continue
+				if (player.mind)
+					if (player.stat != 2)
+						if (get_turf(player) in shuttle)
+							if(!isbluefollower(player))
+								return 0
+		return 1
+	else
+		return 0
+/datum/objective/escape_followers
 	dangerrating = 5
 
-datum/objective/get_followers/proc/gen_amount_goal(var/lowbound = 10, var/highbound = 20)
+/datum/objective/escape_followers/proc/gen_amount_goal(var/lowbound = 8, var/highbound = 15)
 	target_amount = rand (lowbound,highbound)
-	explanation_text = "Your will must surpass this station.  Having [target_amount] followers escape on the shuttle will allow that."
+	explanation_text = "Your will must surpass this station.  Having [target_amount] followers escape on the shuttle or pods will allow that."
 	return target_amount
 
-datum/objective/sacrifice_prophet
+/datum/objective/escape_followers/check_completion()
+	var/escaped = 0
+	if(istype(owner.current, /mob/camera/god))
+		var/mob/camera/god/G = owner.current
+		if(G.side == "red")
+			for(var/datum/mind/follower_mind in ticker.mode.red_followers)
+				if (follower_mind.current && follower_mind.current.stat!=2)
+					var/area/A = get_area(follower_mind.current )
+					if (is_type_in_list(A, centcom_areas))
+						escaped++
+		if(G.side == "blue")
+			for(var/datum/mind/follower_mind in ticker.mode.blue_followers)
+				if (follower_mind.current && follower_mind.current.stat!=2)
+					var/area/A = get_area(follower_mind.current )
+					if (is_type_in_list(A, centcom_areas))
+						escaped++
+		if(escaped>=target_amount)
+			return 0
+		else
+			return 1
+
+/datum/objective/sacrifice_prophet
 	explanation_text = "A false prophet is preaching their god's faith on the station.  Sacrificing them will show the mortals who the true god is."
 	dangerrating = 10
+	var/done = 0 //This is set to one if a prophet is sacrificed. See code/game/gamemodes/handofgod/structures.dm
+
+/datum/objective/sacrifice_prophet/check_completion()
+	if(done == 1)
+		return 1
+	else
+		return 0
+/*
+/datum/objective/dept_genocide  //Too hard to make it work without messing with converts and such.  Sorry.
+	explanation_text = "A department on the station has proven to be heretical.  All of the    department must die."
+	dangerrating = 20
+*/

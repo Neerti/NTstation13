@@ -3,11 +3,11 @@
 	real_name = "deity"
 	icon = 'icons/mob/god.dmi'
 	icon_state = "marker"
-	see_invisible = SEE_INVISIBLE_MINIMUM
-	invisibility = INVISIBILITY_OBSERVER
+//	see_invisible = SEE_INVISIBLE_MINIMUM
+	invisibility = 60
 	see_in_dark = 0 //so you can hide in maint from omniscient beings
 	sight = SEE_TURFS | SEE_MOBS | SEE_OBJS | SEE_SELF
-	universal_speak = 1 //only lesser mortals have a language barrier.
+	universal_speak = 1 //They can't hear humans otherwise
 
 	var/god_points = 0 //Used to interact with your followers.
 	var/max_god_points = 100

@@ -386,7 +386,7 @@ datum/mind
 				if(!def_value)//If it's a custom objective, it will be an empty string.
 					def_value = "custom"
 
-			var/new_obj_type = input("Select objective type:", "Objective type", def_value) as null|anything in list("assassinate", "debrain", "protect", "prevent", "hijack", "escape", "survive", "steal", "download", "nuclear", "capture", "absorb", "custom")
+			var/new_obj_type = input("Select objective type:", "Objective type", def_value) as null|anything in list("assassinate", "debrain", "protect", "prevent(silicon)", "hijack", "escape", "survive", "steal", "download(ninja)", "nuclear", "capture(ninja)", "absorb(ling)", "follower block(god)", "deicide(god)", "build(god)", "follower escape(god)", "sacrifice prophet(god)", "custom")
 			if (!new_obj_type) return
 
 			var/datum/objective/new_objective = null
@@ -424,7 +424,7 @@ datum/mind
 						//Will display as special role if the target is set as MODE. Ninjas/commandos/nuke ops.
 						new_objective.explanation_text = "[objective_type] [new_target:real_name], the [new_target:mind:assigned_role=="MODE" ? (new_target:mind:special_role) : (new_target:mind:assigned_role)]."
 
-				if ("prevent")
+				if ("prevent(silicon)")
 					new_objective = new /datum/objective/block
 					new_objective.owner = src
 
@@ -454,7 +454,7 @@ datum/mind
 					if (!steal.select_target())
 						return
 
-				if("download","capture","absorb")
+				if("download(ninja)","capture(ninja)","absorb(ling)")
 					var/def_num
 					if(objective&&objective.type==text2path("/datum/objective/[new_obj_type]"))
 						def_num = objective.target_amount
@@ -464,17 +464,37 @@ datum/mind
 						return
 
 					switch(new_obj_type)
-						if("download")
+						if("download(ninja)")
 							new_objective = new /datum/objective/download
 							new_objective.explanation_text = "Download [target_number] research levels."
-						if("capture")
+						if("capture(ninja)")
 							new_objective = new /datum/objective/capture
 							new_objective.explanation_text = "Accumulate [target_number] capture points."
-						if("absorb")
+						if("absorb(ling)")
 							new_objective = new /datum/objective/absorb
 							new_objective.explanation_text = "Absorb [target_number] compatible genomes."
 					new_objective.owner = src
 					new_objective.target_amount = target_number
+
+				if ("follower block(god)")
+					new_objective = new /datum/objective/follower_block
+					new_objective.owner = src
+
+				if ("build(god)")
+					new_objective = new /datum/objective/build
+					new_objective.owner = src
+
+				if ("deicide(god)")
+					new_objective = new /datum/objective/deicide
+					new_objective.owner = src
+
+				if ("follower escape(god)")
+					new_objective = new /datum/objective/escape_followers
+					new_objective.owner = src
+
+				if ("sacrifice prophet(god)")
+					new_objective = new /datum/objective/sacrifice_prophet
+					new_objective.owner = src
 
 				if ("custom")
 					var/expl = copytext(sanitize(input("Custom objective:", "Objective", objective ? objective.explanation_text : "") as text|null),1,MAX_MESSAGE_LEN)
