@@ -281,11 +281,13 @@ proc/process_ghost_teleport_locs()
 	name = "\improper Special Ops Shuttle"
 	icon_state = "shuttlered"
 	destination = /area/shuttle/specops/station
+	has_gravity = 1
 
 /area/shuttle/specops/station
 	name = "\improper Special Ops Shuttle"
 	icon_state = "shuttlered2"
 	destination = /area/shuttle/specops/centcom
+	has_gravity = 1
 
 /area/shuttle/thunderdome
 	name = "honk"
@@ -500,14 +502,13 @@ proc/process_ghost_teleport_locs()
 	requires_power = 0
 	has_gravity = 1
 
+//middle
+
 /area/centcom/control
-	name = "\improper Centcom Docks"
+	name = "\improper Centcom Arrivals Sector"
 
 /area/centcom/evac
 	name = "\improper Centcom Emergency Shuttle"
-
-/area/centcom/suppy
-	name = "\improper Centcom Supply Shuttle"
 
 /area/centcom/ferry
 	name = "\improper Centcom Transport Shuttle"
@@ -516,25 +517,56 @@ proc/process_ghost_teleport_locs()
 	name = "\improper Admin Prison"
 
 /area/centcom/holding
-	name = "\improper Holding Facility"
+	name = "\improper Centcom Security"
 
 /area/centcom/bar
 	name = "\improper Centcom Bar"
 
+/area/centcom/civilian
+	name = "\improper Justice Sector"
+
+//center rooms
+
 /area/centcom/center
 	name = "\improper Centcom Central"
+
+/area/centcom/center/top
+	name = "\improper Upper Central"
+
+/area/centcom/center/mid
+	name = "\improper Middle Central" //sounds odd, i know
+
+/area/centcom/center/low
+	name = "\improper Lower Central"
+
+//upper rooms
 
 /area/centcom/specops
 	name = "\improper Special Operations Sector"
 
-/area/centcom/civilian
-	name = "\improper Civilian Sector"
-
 /area/centcom/medsci
-	name = "\improper Medsci Sector"
+	name = "\improper Med-Sci Sector"
+
+/area/centcom/command
+	name = "\improper Command Sector"
+
+//lower rooms
+
+/area/centcom/agent
+	name = "\improper Secret Sector"
+
+/area/centcom/engineering
+	name = "\improper Centcom Engineering Sector"
+
+/area/centcom/suppy
+	name = "\improper Centcom Cargo Sector"
+
+
 
 /area/centcom/misc/prefab_dungeon //for badmins to fill
 	name = "\improper Centcom Depths"
+
+//misc areas
 
 /area/centcom/misc/plane
 	name = "\improper Blank Plane"
