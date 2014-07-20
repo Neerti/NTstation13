@@ -614,6 +614,15 @@ var/list/slot_equipment_priority = list( \
 			add_stings_to_statpanel(mind.changeling.purchasedpowers)
 	add_spells_to_statpanel(mob_spell_list)
 
+	if(client)
+		statpanel("Examine")
+		stat("<font size='5'>[desc_name_holder]</font>")
+		stat("[desc_holder]")
+		if(desc_info_holder)
+			stat("<font color='#086A87'><b>[desc_info_holder]</b></font>")
+		if(desc_fluff_holder)
+			stat("<font color='#B18904'><i>\"[desc_fluff_holder]\"</i></font>")
+
 /mob/proc/add_spells_to_statpanel(var/list/spells)
 	for(var/obj/effect/proc_holder/spell/S in spells)
 		if(S.can_be_cast_by(src))

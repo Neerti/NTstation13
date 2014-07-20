@@ -166,3 +166,9 @@
 	var/alien_talk_understand = 0
 
 	var/turf/listed_turf = null	//the current turf being examined in the stat panel
+
+
+	var/desc_name_holder = null
+	var/desc_holder = null
+	var/desc_info_holder = null
+	var/desc_fluff_holder = null

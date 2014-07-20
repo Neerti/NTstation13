@@ -10,6 +10,9 @@
 	var/pass_flags = 0
 	var/throwpass = 0
 
+	var/desc_info = null //For the extended examination.  This is the blue 'tutorial text' that is on the second line.
+	var/desc_fluff = null //Ditto as above, but third line, golden letters and quotes, and is meant for fluff things.
+
 	///Chemistry.
 	var/datum/reagents/reagents = null
 
@@ -218,6 +221,23 @@ its easier to just keep the beam vertical.
 	usr << "\icon[src]That's \a [src]." //changed to "That's" from "This is" because "This is some metal sheets" sounds dumb compared to "That's some metal sheets" ~Carn
 	if(desc)
 		usr << desc
+		usr.desc_name_holder = src.name
+		usr.desc_holder = src.desc
+		usr.desc_info_holder = src.desc_info
+		usr.desc_fluff_holder = src.desc_fluff
+
+/*
+/obj/examine()
+	..()
+	if(src.desc_info)
+		usr.statpanel("Examine")
+		usr.stat("<font size='5'>\icon[src] [src.name]</font>")
+		usr.stat("[src.desc]")//stat(
+		usr.stat("<font color='#086A87'><b>[src.desc_info]</b></font>")
+		usr.stat("<font color='#B18904'><i>\"[src.desc_fluff]\"</i></font>")
+
+
+*/
 	// *****RM
 	//usr << "[name]: Dn:[density] dir:[dir] cont:[contents] icon:[icon] is:[icon_state] loc:[loc]"
 	return
