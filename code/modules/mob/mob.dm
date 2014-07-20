@@ -621,7 +621,7 @@ var/list/slot_equipment_priority = list( \
 		if(desc_info_holder)
 			stat("<font color='#086A87'><b>[desc_info_holder]</b></font>")
 		if(desc_fluff_holder)
-			stat("<font color='#B18904'><i>\"[desc_fluff_holder]\"</i></font>")
+			stat("<font color='#B18904'><b>\"[desc_fluff_holder]\"</b></font>")
 
 /mob/proc/add_spells_to_statpanel(var/list/spells)
 	for(var/obj/effect/proc_holder/spell/S in spells)

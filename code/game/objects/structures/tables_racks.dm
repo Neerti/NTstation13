@@ -114,6 +114,8 @@
 /obj/structure/table
 	name = "table"
 	desc = "A square piece of metal standing on four metal legs. It can not move."
+	desc_info = "Use a wrench to deconstruct.  You can also pull players onto tables if you grab them."
+	desc_fluff = "A cold, metal table with four legs.  Unremarkable."
 	icon = 'icons/obj/structures.dmi'
 	icon_state = "table"
 	density = 1
@@ -625,6 +627,7 @@ Destroy type values:
 /obj/structure/table/woodentable
 	name = "wooden table"
 	desc = "Do not apply fire to this. Rumour says it burns easily."
+	desc_fluff = "A nice looking wooden table.  Usually reserved for offices."
 	icon_state = "woodtable"
 	parts = /obj/item/weapon/table_parts/wood
 
@@ -632,6 +635,7 @@ Destroy type values:
 /obj/structure/table/woodentable/poker //No specialties, Just a mapping object.
 	name = "gambling table"
 	desc = "A seedy table for seedy dealings in seedy places."
+	desc_fluff = "Not many people know, but this table violates Nanotrasen regulation 48.B, where all green tables must be a certain shade of green."
 	icon_state = "pokertable"
 	parts = /obj/item/weapon/table_parts/wood/poker
 
@@ -641,6 +645,9 @@ Destroy type values:
 /obj/structure/table/reinforced
 	name = "reinforced table"
 	desc = "A version of the four legged table. It is stronger."
+	desc_info = "Use a welder, then wrench to deconstruct.  Otherwise the same as a normal table."
+	desc_fluff = "This kind of table is reinforced by having rods connecting the table to the floor.  Cutting the rods would\
+	 likely compromise it's integrity."
 	icon_state = "reinftable"
 	parts = /obj/item/weapon/table_parts/reinforced
 	var/status = 2
@@ -673,6 +680,7 @@ Destroy type values:
 /obj/structure/rack
 	name = "rack"
 	desc = "Different from the Middle Ages version."
+	desc_info = "Use a wrench to deconstruct."
 	icon = 'icons/obj/objects.dmi'
 	icon_state = "rack"
 	density = 1
